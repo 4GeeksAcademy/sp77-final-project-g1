@@ -107,7 +107,7 @@ class Applications(db.Model):
                 'is_approved': self.is_approved,
                 'amount': self.amount}
 
-
+      
 class History(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     period = db.Column(db.DateTime, nullable=False)
@@ -141,5 +141,3 @@ class Expenses(db.Model):
                 'amount': self.amount,
                 'date': self.date}
 
-
-                
