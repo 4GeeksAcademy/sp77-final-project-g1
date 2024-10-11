@@ -107,6 +107,7 @@ class Applications(db.Model):
                 'is_approved': self.is_approved,
                 'amount': self.amount}
 
+
 class History(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     period = db.Column(db.DateTime, nullable=False)
@@ -124,3 +125,21 @@ class History(db.Model):
                 'amount': self.amount}
 
 
+class Expenses(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    amount = db.Column(db.Float, unique=False, nullable=False)
+    vouchers = db.Column(db.LargeBinary, nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
+    applications_id = db.Column(db.Integer, db.ForeignKey('applications.id'))
+    applications_to = db.relationship('Applications', foreign_keys=[applications_id], backref=db.backref('applications_to', lazy='select'))
+
+    def __ref__(self):
+        return f'Expenses {self.id} - {self.amount} - {self.date}'
+
+    def serialize(self):
+        return {'id': self.id,
+                'amount': self.amount,
+                'date': self.date}
+
+
+                
