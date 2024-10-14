@@ -4,12 +4,11 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-from datetime import datetime
+from datetime import datetime, timezone
 from api.models import db, Companies, Users, Administrators, Applications, Histories, Expenses
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
-from flask import request
 
 api = Blueprint('api', __name__)
 CORS(api)  # Allow CORS requests to this API
@@ -33,7 +32,7 @@ def login():
     return response_body, 200
 
 
-@api.route('/companies', methods=['GET, POST'])
+@api.route('/companies', methods=['GET', 'POST'])
 def companies():
     # Obtengo del toker(del current user) si el usuario es appadmin. Si no lo es, permiso denegado, contrario, continua. 
     response_body = {}
@@ -60,7 +59,7 @@ def companies():
         return response_body, 201
 
 
-@api.route('/users', methods=['GET, POST'])
+@api.route('/users', methods=['GET', 'POST'])
 def users():
     response_body = {}
     if request.method == 'GET':
@@ -88,7 +87,7 @@ def users():
         return response_body, 201
 
 
-@api.route('/administrators', methods=['GET, POST'])
+@api.route('/administrators', methods=['GET', 'POST'])
 def administrators():
     response_body = {}
     if request.method == 'GET':
@@ -114,7 +113,7 @@ def administrators():
         return response_body, 201
 
 
-@api.route('/employees', methods=['GET, POST'])
+@api.route('/employees', methods=['GET', 'POST'])
 def employees():
     response_body = {}
     if request.method == 'GET':
@@ -141,7 +140,7 @@ def employees():
         return response_body, 201
 
 
-@api.route('/applications', methods=['GET, POST'])
+@api.route('/applications', methods=['GET', 'POST'])
 def applications():
     response_body = {}
     if request.method == 'GET':
@@ -165,7 +164,7 @@ def applications():
         return response_body, 201
 
 
-@api.route('/histories', methods=['GET, POST'])
+@api.route('/histories', methods=['GET', 'POST'])
 def histories():
     response_body = {}
     if request.method == 'GET':
@@ -190,7 +189,7 @@ def histories():
         return response_body, 201
 
 
-@api.route('/expenses', methods=['GET, POST'])
+@api.route('/expenses', methods=['GET', 'POST'])
 def expenses():
     response_body = {}
     if request.method == 'GET':

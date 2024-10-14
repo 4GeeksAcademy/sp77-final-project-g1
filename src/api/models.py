@@ -25,8 +25,8 @@ class Users(db.Model):
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     is_app_admin = db.Column(db.Boolean(), unique=False, nullable=False)
     date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
-    companany_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
-    companies_to = db.relationship('Companies', foreign_keys=[companany_id], backref=db.backref('users_to'), lazy='select')
+    company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    companies_to = db.relationship('Companies', foreign_keys=[company_id], backref=db.backref('users_to'), lazy='select')
 
     def __repr__(self):
         return f'User {self.id} - {self.email}'
