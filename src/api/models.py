@@ -1,16 +1,17 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime, timezone
 
 
 db = SQLAlchemy()
 
 
-class Company(db.Model):
+class Companies(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=False, nullable=False)
-    date_recored = db.Column(db.DateTime, nullable=False)
+    date_recored = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
 
     def __repr__(self):
-        return f'Company {self.id} - {self.name}'
+        return f'Companies {self.id} - {self.name}'
 
     def serialize(self):
         return{'id': self.id,
@@ -20,12 +21,12 @@ class Company(db.Model):
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String, unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     is_app_admin = db.Column(db.Boolean(), unique=False, nullable=False)
-    date = db.Column(db.DateTime, nullable=False) 
-    company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
-    company_to = db.relationship('Company', foreign_keys=[company_id], backref=db.backref('users_to'), lazy='select')
+    date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
+    companany_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
+    companies_to = db.relationship('Companies', foreign_keys=[companany_id], backref=db.backref('users_to'), lazy='select')
 
     def __repr__(self):
         return f'User {self.id} - {self.email}'
@@ -43,7 +44,7 @@ class Administrators(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=False, nullable=False)
     last_name = db.Column(db.String, unique=False, nullable=False)
-    date_created = db.Column(db.DateTime, nullable=False)
+    date_created = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('administrator_to', lazy='select'))
 
@@ -61,7 +62,7 @@ class Employees(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=False, nullable=False)
     last_name = db.Column(db.String, unique=False, nullable=False)
-    date_created = db.Column(db.DateTime, nullable=False)
+    date_created = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     budget_limit = db.Column(db.Integer, unique=False, nullable=False)
     #  limit_expense_alert = db.Column(db.Bool, unique=False, nullable=False)
     #  sended_applications = db.Column(db.Integer, unique=False, nullable=False)
@@ -83,17 +84,17 @@ class Employees(db.Model):
 class Applications(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String, unique=False, nullable=False)
-    creation_date = db.Column(db.DateTime, nullable=False)
-    approved_date = db.Column(db.DateTime, nullable=False)
-    reviewed_date = db.Column(db.DateTime, nullable=False)
-    is_approved = db.Column(db.Boolean, nullable=False)
+    creation_date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
+    approved_date = db.Column(db.DateTime(timezone=True))
+    reviewed_date = db.Column(db.DateTime(timezone=True))
+    is_approved = db.Column(db.Boolean, nullable=False, default=False)
     amount = db.Column(db.Float, unique=False, nullable=False)
     employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'))
     employee_to = db.relationship('Employees', foreign_keys=[employee_id], backref=db.backref('applications_employee_to', lazy='select'))
     approved_by = db.Column(db.Integer, db.ForeignKey('employees.id'))
-    approved_to = db.relationship('Employees', foreign_keys=[employee_id], backref=db.backref('applications_approved_to', lazy='select'))
+    approved_to = db.relationship('Employees', foreign_keys=[approved_by], backref=db.backref('applications_approved_to', lazy='select'))
     reviewed_by = db.Column(db.Integer, db.ForeignKey('employees.id'))
-    reviewed_to = db.relationship('Employees', foreign_keys=[employee_id], backref=db.backref('applications_reviewed_to', lazy='select'))
+    reviewed_to = db.relationship('Employees', foreign_keys=[reviewed_by], backref=db.backref('applications_reviewed_to', lazy='select'))
 
     def __ref__(self):
         return f'Applications {self.id} - {self.employee_id}'
@@ -108,7 +109,7 @@ class Applications(db.Model):
                 'amount': self.amount}
 
       
-class History(db.Model):
+class Histories(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     period = db.Column(db.DateTime, nullable=False)
     amount = db.Column(db.Float, unique=False, nullable=False)
@@ -116,7 +117,7 @@ class History(db.Model):
     employee_to = db.relationship('Employees', foreign_keys=[employee_id], backref=db.backref('history_to', lazy='select'))
 
     def __ref__(self):
-        return f'History {self.id} - {self.period} - {self.employee_id}'
+        return f'Histories {self.id} - {self.period} - {self.employee_id}'
 
     def serialize(self):
         return {'id': self.id,
@@ -129,7 +130,7 @@ class Expenses(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     amount = db.Column(db.Float, unique=False, nullable=False)
     vouchers = db.Column(db.LargeBinary, nullable=False)
-    date = db.Column(db.DateTime, nullable=False)
+    date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     applications_id = db.Column(db.Integer, db.ForeignKey('applications.id'))
     applications_to = db.relationship('Applications', foreign_keys=[applications_id], backref=db.backref('applications_to', lazy='select'))
 
