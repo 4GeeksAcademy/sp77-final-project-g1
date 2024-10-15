@@ -2,7 +2,7 @@ import os
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-from .models import db, Users, Company, Administrators, Employees, Applications, Expenses
+from .models import db, Users, Companies, Administrators, Employees, Applications, Histories, Expenses
 
 
 def setup_admin(app):
@@ -10,9 +10,10 @@ def setup_admin(app):
     app.config['FLASK_ADMIN_SWATCH'] = 'darkly'
     admin = Admin(app, name='4Geeks Admin', template_mode='bootstrap3')
     admin.add_view(ModelView(Users, db.session))  
-    admin.add_view(ModelView(Company, db.session))
+    admin.add_view(ModelView(Companies, db.session))
     admin.add_view(ModelView(Administrators, db.session))
     admin.add_view(ModelView(Employees, db.session))
     admin.add_view(ModelView(Applications, db.session))
+    admin.add_view(ModelView(Histories, db.session))
     admin.add_view(ModelView(Expenses, db.session))
     

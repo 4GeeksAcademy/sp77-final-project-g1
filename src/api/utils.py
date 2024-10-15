@@ -31,7 +31,7 @@ def generate_sitemap(app):
             url = url_for(rule.endpoint, **(rule.defaults or {}))
             if "/admin/" not in url:
                 links.append(url)
-    links_html = "".join([f'<li><a href="{link}" target="_blank">{link}</a></li>' for link in links])
+    links_html = "".join(f'<li><a href="{link}" target="_blank">{link}</a></li>' for link in links)
     return """
         <div style="text-align: center;">
             <img style="max-height: 80px" src='https://storage.googleapis.com/breathecode/boilerplates/rigo-baby.jpeg' />
