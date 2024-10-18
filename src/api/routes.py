@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime, timezone
-from api.models import db, Companies, Users, Administrators, Applications, Histories, Expenses
+from api.models import db, Companies, Users, Administrators, Applications, Histories, Expenses, Employees
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
@@ -156,6 +156,7 @@ def applications():
     if request.method == 'POST':
         data = request.json()
         row = Applications(description = data.get('description'),
+                           amount = data.get('amount'),
                            employee_id = data.get('employee_id'))
         db.session.add(row)
         db.session.commit()
@@ -202,11 +203,11 @@ def expenses():
         response_body['message'] = 'Gastos (GET)'
         response_body['results'] = result
         return response_body, 200
-        if request.method == 'POST':
-            data = request.json()
-            row = Companies(amount = data.get('amount'),
-                            vouchers = data.get('vouchers'),
-                            date = datetime.now())
+    if request.method == 'POST':
+        data = request.json()
+        row = Companies(amount = float(data.form.get('amount')),
+                        vouchers = data.form.get('vouchers'),
+                        date = datetime.now())
         db.session.add(row)
         db.session.commit()
         response_body['message'] = 'Creando un revision historial (POST)'
@@ -219,9 +220,9 @@ def company(id):
     response_body = {}
     rows = db.session.execute(db.select(Companies).where(Companies.id == id)).scalar()
     if not rows:
-            response_body['message'] = f'Compañia no existe'
-            response_body['result'] = {}
-            return response_body, 404
+        response_body['message'] = f'Compañia no existe'
+        response_body['result'] = {}
+        return response_body, 404
     if request.method == 'GET':
         response_body['message'] = 'Compañia (GET)'
         response_body['results'] = rows.serialize()
@@ -246,9 +247,9 @@ def user(id):
     response_body = {}
     rows = db.session.execute(db.select(Users).where(Users.id == id)).scalar()
     if not rows:
-            response_body['message'] = f'Usuario no existe'
-            response_body['result'] = {}
-            return response_body, 404
+        response_body['message'] = f'Usuario no existe'
+        response_body['result'] = {}
+        return response_body, 404
     if request.method == 'GET':
         response_body['message'] = 'Usuario (GET)'
         response_body['results'] = rows.serialize()
@@ -275,9 +276,9 @@ def admin(id):
     response_body = {}
     rows = db.session.execute(db.select(Administrators).where(Administrators.id == id)).scalar()
     if not rows:
-            response_body['message'] = f'Administrador no existe'
-            response_body['result'] = {}
-            return response_body, 404
+        response_body['message'] = f'Administrador no existe'
+        response_body['result'] = {}
+        return response_body, 404
     if request.method == 'GET':
         response_body['message'] = 'Administrador (GET)'
         response_body['results'] = rows.serialize()
@@ -296,3 +297,106 @@ def admin(id):
         response_body['message'] = f'Administrador eliminado'
         response_body['result'] = {}
         return response_body, 200
+
+
+@api.route('/employees/<int:id>', methods=['GET','PUT', 'DELETE'])
+def employee(id):
+    response_body = {}
+    rows = db.session.execute(db.select(Employees).where(Employees.id == id)).scalar()
+    if not rows:
+        response_body['message'] = f'Empleado no existe'
+        response_body['result'] = {}
+        return response_body, 404
+    if request.method == 'GET':
+        response_body['message'] = 'Empleado (GET)'
+        response_body['results'] = rows.serialize()
+        return response_body, 200
+    if request.method == 'PUT':
+        data = request.json
+        rows.name = data.get('name')
+        rows.last_name = data.get('last_name')
+        rows.budget_limit = data.get('budget_limit')
+        db.session.commit()
+        response_body['message'] = f'El empleado {id} ha sido modificada'
+        response_body['result'] = rows.serialize()
+        return response_body, 201
+    if request.method == 'DELETE':
+        db.session.delete(rows)
+        db.session.commit()
+        response_body['message'] = f'Empleado eliminado'
+        response_body['result'] = {}
+        return response_body, 200
+    
+
+@api.route('/applications/<int:id>', methods=['GET','PUT', 'DELETE'])
+def application(id):
+    response_body = {}
+    rows = db.session.execute(db.select(Applications).where(Applications.id == id)).scalar()
+    if not rows:
+        response_body['message'] = f'solicitud no existe'
+        response_body['result'] = {}
+        return response_body, 404
+    if request.method == 'GET':
+        response_body['message'] = 'solicitudes (GET)'
+        response_body['results'] = rows.serialize()
+        return response_body, 200
+    if request.method == 'PUT':
+        data = request.json
+        rows.description = data.get('description')
+        rows.amount = data.get('amount')
+        rows.approved_date = data.get('approved_date')
+        rows.reviewed_date = data.get('reviewed_date')
+        rows.is_approved = data.get('is_approved')
+        db.session.commit()
+        response_body['message'] = f'solicitud {id} ha sido modificada'
+        response_body['result'] = rows.serialize()
+        return response_body, 201
+    if request.method == 'DELETE':
+        db.session.delete(rows)
+        db.session.commit()
+        response_body['message'] = f'solicitud eliminado'
+        response_body['result'] = {}
+        return response_body, 200
+    
+
+@api.route('/histories/<int:id>', methods=['GET'])
+def history(id):
+    response_body = {}
+    rows = db.session.execute(db.select(Histories).where(Histories.id == id)).scalar()
+    if not rows:
+        response_body['message'] = f'Historial no existe'
+        response_body['result'] = {}
+        return response_body, 404
+    if request.method == 'GET':
+        response_body['message'] = 'Historial (GET)'
+        response_body['results'] = rows.serialize()
+        return response_body, 200
+
+
+@api.route('/expenses/<int:id>', methods=['GET','PUT', 'DELETE'])
+def expenditure(id):
+    response_body = {}
+    rows = db.session.execute(db.select(Expenses).where(Expenses.id == id)).scalar()
+    if not rows:
+        response_body['message'] = f'gasto no existe'
+        response_body['result'] = {}
+        return response_body, 404
+    if request.method == 'GET':
+        response_body['message'] = 'gasto (GET)'
+        response_body['results'] = rows.serialize()
+        return response_body, 200
+    if request.method == 'PUT':
+        data = request.json
+        rows.amount = data.get('amount')
+        rows.vouchers = data.get('vouchers')
+        db.session.commit()
+        response_body['message'] = f'gasto {id} ha sido modificada'
+        response_body['result'] = rows.serialize()
+        return response_body, 201
+    if request.method == 'DELETE':
+        db.session.delete(rows)
+        db.session.commit()
+        response_body['message'] = f'gasto eliminado'
+        response_body['result'] = {}
+        return response_body, 200
+      
