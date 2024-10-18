@@ -399,4 +399,4 @@ def expenditure(id):
         response_body['message'] = f'gasto eliminado'
         response_body['result'] = {}
         return response_body, 200
-    
+      
