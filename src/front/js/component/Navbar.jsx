@@ -1,24 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 
 export const Navbar = () => {
-    const [theme, setTheme] = React.useState("light");
-    const navigate = useNavigate()
-
-    // Cambia la clase del body cada vez que se cambia el tema
-    useEffect(() => {
-        document.body.className = theme; // Cambia la clase del body
-    }, [theme]);
-
-    // Función para cambiar el tema
-    const toggleTheme = () => {
-        setTheme(prevTheme => (prevTheme === 'dark' ? 'light' : 'dark'));
+    const navigate = useNavigate();
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    const toggleDarkMode = () => {
+        setIsDarkMode(!isDarkMode);
     };
 
     return (
         <div className="container">
-            <nav className={`navbar navbar-expand-lg navbar-light shadow-md ${theme}`}>
+            <nav className="navbar navbar-expand-lg navbar-light shadow-md">
                 <div className="container-fluid">
                     <span className="navbar-brand text-2xl font-semibold">
                         <Link to="/" className="nav-link text-secondary">
@@ -66,9 +59,13 @@ export const Navbar = () => {
                         <div className="d-flex align-items-center">
                             <button
                                 className="btn me-2"
-                                onClick={toggleTheme}
+                                onClick={toggleDarkMode}
                             >
-                                {theme === 'dark' ? <i className="fa-regular fa-sun"></i> : <i className="fa-regular fa-moon"></i>}
+                                {isDarkMode ? (
+                                    <i className="fa-regular fa-sun"></i>
+                                ) : (
+                                    <i className="fa-regular fa-moon"></i>
+                                )}
                             </button>
                             <button className="btn me-2">
                                 <i className="fa-regular fa-bell"></i>
@@ -84,33 +81,36 @@ export const Navbar = () => {
                                 >
                                     <i className="fa-regular fa-user" style={{ fontSize: '20px' }}></i>
                                 </button>
-                                <ul className="dropdown-menu" aria-labelledby="dropdown-basic" style={{ right: 0, left: 'auto' }}>
+                                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-basic">
                                     <li>
-                                        <a className="dropdown-item" href="#">
+                                        <Link className="dropdown-item" to="/profile">
                                             <div className="d-flex align-items-center">
                                                 <i className="fa-regular fa-id-badge me-2"></i>
                                                 <span>Profile</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li>
-                                        <a className="dropdown-item" href="#">
+                                        <Link className="dropdown-item" to="/settings">
                                             <div className="d-flex align-items-center">
                                                 <i className="fa-solid fa-sliders me-2"></i>
                                                 <span>Settings</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li>
                                         <hr className="dropdown-divider" />
                                     </li>
                                     <li>
-                                        <a className="dropdown-item" onClick={() => console.log("Logging out...")} href="#">
+                                        <button className="dropdown-item" onClick={() => {
+                                            console.log("Logging out...");
+                                            navigate('/login');
+                                        }}>
                                             <div className="d-flex align-items-center">
                                                 <i className="fa-solid fa-arrow-right-from-bracket me-2"></i>
                                                 <span>Log out</span>
                                             </div>
-                                        </a>
+                                        </button>
                                     </li>
                                 </ul>
                             </div>
