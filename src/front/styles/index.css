@@ -1,3 +1,34 @@
-/* 
-    General Styles used on every website (Don't Repeat Yourself)
-*/
+body.light {
+    background-color: white;
+    color: black;
+}
+
+body.dark {
+    background-color: #121212;
+    color: white; 
+}
+
+.navbar.light {
+    background-color: #f8f9fa;
+}
+
+.navbar.dark {
+    background-color: #1E1E1E; /* Fondo del navbar */
+}
+
+.navbar.dark .nav-link {
+    color: #E0E0E0; /* Color de los enlaces */
+}
+
+.navbar.dark .nav-link:hover {
+    color: #106ae7; /* Color de los enlaces al pasar el cursor */
+}
+
+.navbar.dark .navbar-brand {
+    color: #E0E0E0;/* Color de la marca */
+}
+
+/* Ajustes para los iconos */
+.navbar.dark .nav-icon {
+    color: #E0E0E0; /* Color de los iconos */
+}

@@ -19,16 +19,16 @@ app = Flask(__name__)
 app.url_map.strict_slashes = False
 # Database condiguration
 db_url = os.getenv("DATABASE_URL")
-if db_url is not None:
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("postgres://", "postgresql://")
+if db_url is not None: app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace(
+        "postgres://", "postgresql://")
 else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/test.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
-# Others configutations
-setup_admin(app)  # Add the admin
-setup_commands(app)  # Add the admin
+# Other configurations
+setup_admin(app) # Add the admin
+setup_commands(app)  #Add the admin
 app.register_blueprint(api, url_prefix='/api')  # Add all endpoints form the API with a "api" prefix
 # Setup the Flask-JWT-Extended extension
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KE")  # VERY IMPORTANT!
@@ -55,7 +55,7 @@ def serve_any_other_file(path):
     if not os.path.isfile(os.path.join(static_file_dir, path)):
         path = 'index.html'
     response = send_from_directory(static_file_dir, path)
-    response.cache_control.max_age = 0  # Avoid cache memory
+    response.cache_control.max_age = 0 # Avoid cache memory
     return response
 
 
