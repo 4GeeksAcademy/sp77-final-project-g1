@@ -5,35 +5,43 @@ import { useNavigate } from "react-router-dom";
 export const Login = () => {
   const [activeTab, setActiveTab] = useState('login');
   const { store, actions } = useContext(Context);
+  const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const [fullname, setFullname] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const dataToSend = { email, password };
-    console.log(dataToSend);
     await actions.login(dataToSend)
-    console.log(store.isLoged)
     if (store.isLoged) {
       navigate("/dashboard")
     } else {
       navigate("/protected")
     }
   };
-
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    const dataToSend = {
+      email: "email",
+      fullname: "fullname",
+      password: "password",
+      is_active: "is_active"
+    };
+    await actions.newSignUp(dataToSend)
+    if (store.isLoged) {
+      navigate("/dashboard")
+    } else {
+      navigate("/protected")
+  }
+  }
   const passwordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
   const handleEmail = (event) => setEmail(event.target.value)
   const handlePassword = (event) => setPassword(event.target.value)
-
-  const signup = async () => {
-    navigate('/sign-up')
-  }
 
   return (
     <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: '#191919', backdropFilter: 'blur(5px)' }}>
@@ -94,21 +102,26 @@ export const Login = () => {
           )}
 
           {activeTab === 'register' && (
-            <form className="space-y-4" onSubmit={handleSubmit}>
+            <form className="space-y-4" onSubmit={handleRegister}>
               <div className="mb-3">
                 <label className="form-label">Nombre</label>
-                <input
-                  type="text"
-                  className="form-control bg-dark text-white"
-                  placeholder="Nombre Apellido"
-                  value={fullname}
-                  onChange={(e) => setFullname(e.target.value)}
-                  required
-                />
+                <input 
+                type="text" 
+                className="form-control bg-dark text-white"
+                value={fullname} 
+                onChange={setFullname}
+                placeholder="Nombre Apellido" 
+                required />
+                
               </div>
               <div className="mb-3">
                 <label className="form-label">Correo electrónico</label>
-                <input type="email" className="form-control bg-dark text-white" id="register-email" placeholder="m@ejemplo.com" required />
+                <input type="email" 
+                className="form-control bg-dark text-white" 
+                value={email}
+                onChange={handleEmail}
+                placeholder="m@ejemplo.com" 
+                required />
               </div>
               <div className="input-group">
                 <input

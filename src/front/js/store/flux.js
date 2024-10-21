@@ -34,7 +34,6 @@ const getState = ({ getStore, getActions, setStore }) => {
                     return;
                 }
                 const data = await response.json()
-                console.log(data)
                 localStorage.setItem('token', data.access_token)
                 localStorage.setItem('user', JSON.stringify(data.results))
                 setStore({ isLoged: true, user: data.results.email })
@@ -48,9 +47,25 @@ const getState = ({ getStore, getActions, setStore }) => {
                 const token = localStorage.getItem('token')
                 if (token) {
                     const userData = JSON.parse(localStorage.getItem('user'));
-                    console.log(userData)
                     setStore({ isLoged: true, user: userData.email })
                 }
+            },
+            newSignUp: async (dataToSend) => {
+                const uri = `${process.env.BACKEND_URL}/api/sign-up`;
+                const options = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSend)
+                };
+                    const response = await fetch(uri, options);
+                    if (!response.ok) {
+                        console.log("Error:", response.status);
+                        return;
+                    }
+                    const data = await response.json();
+                    setStore({ isLoged: true });
             },
 		}
 	};
