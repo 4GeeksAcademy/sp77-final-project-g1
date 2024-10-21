@@ -72,10 +72,16 @@
 		]
 	},
 	"dependencies": {
+		"@radix-ui/react-tabs": "^1.1.1",
+		"bootstrap": "^5.3.3",
+		"lucide-react": "^0.453.0",
 		"prop-types": "^15.6.1",
 		"react": "^16.8.4",
+		"react-bootstrap": "^2.10.5",
 		"react-dom": "^16.8.4",
 		"react-polyfills": "0.0.1",
-		"react-router-dom": "^6.3.0"
+		"react-router-dom": "^6.3.0",
+		"recharts": "^2.13.0",
+		"styled-components": "^6.1.13"
 	}
 }
