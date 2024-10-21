@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
+import { Context } from "../store/appContext.js";
 
 export const Navbar = () => {
+    const {actions} = useContext(Context)
     const navigate = useNavigate();
     const [isDarkMode, setIsDarkMode] = useState(false);
     const toggleDarkMode = () => {
@@ -106,7 +108,7 @@ export const Navbar = () => {
                                             console.log("Logging out...");
                                             navigate('/login');
                                         }}>
-                                            <div className="d-flex align-items-center">
+                                            <div className="d-flex align-items-center" onClick={actions.logout}>
                                                 <i className="fa-solid fa-arrow-right-from-bracket me-2"></i>
                                                 <span>Log out</span>
                                             </div>
