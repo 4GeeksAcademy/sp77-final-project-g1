@@ -97,44 +97,12 @@ export default function Dashboard() {
     setSearchQuery(event.target.value)
   }
 
-  const handleLogout = () => {
-    console.log('User logged out')
-    // Implement actual logout logic here
-  }
-
-  const handleNewExpenseChange = (event) => {
-    const { name, value } = event.target
-    setNewExpense(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleFileChange = (event) => {
-    const file = event.target.files?.[0]
-    setNewExpense(prev => ({ ...prev, file }))
-  }
-
-  const handleAddExpense = async (event) => {
-    event.preventDefault()
-    setIsAddingExpense(true)
-    try {
-      await addNewExpense(newExpense)
-      setNewExpense({ description: '', amount: '', category: '', date: '', file: null })
-      // Refresh dashboard data
-      const newData = await fetchDashboardData()
-      setDashboardData(newData)
-    } catch (error) {
-      console.error('Error adding expense:', error)
-    } finally {
-      setIsAddingExpense(false)
-    }
-  }
-
   if (isLoading) {
     return <div className="d-flex justify-content-center align-items-center min-vh-100">Loading...</div>
   }
 
   return (
     <div className="min-vh-100 bg-light text-dark">     
-      {/* Main Content */}
       <div className="container mt-4">
         <h1 className="mb-4">Dashboard</h1>
         

@@ -9,7 +9,7 @@ export const Expenses = ({ expenses = [] }) => {
     date: '',
     file: null,
   });
-  const [searchQuery, setSearchQuery] = useState('');
+  const [expenseFilter, setExpenseFilter] = useState('');
   const [isAddingExpense, setIsAddingExpense] = useState(false);
 
   const handleAddExpense = (e) => {
@@ -30,8 +30,8 @@ export const Expenses = ({ expenses = [] }) => {
     setNewExpense((prev) => ({ ...prev, file: e.target.files[0] }));
   };
 
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
+  const inputChange = (e) => {
+    setExpenseFilter(e.target.value);
   };
 
   return (
@@ -48,46 +48,36 @@ export const Expenses = ({ expenses = [] }) => {
             type="search"
             className="form-control mb-4"
             placeholder="Search expenses..."
-            value={searchQuery}
-            onChange={handleSearchChange}
+            value={expenseFilter}
+            onChange={inputChange}
           />
-          <div className="table-responsive">
-            <table className="table table-striped table-bordered table-hover">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Description</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {expenses
-                  .filter((expense) =>
-                    expense.description.toLowerCase().includes(searchQuery.toLowerCase())
-                  )
-                  .map((expense) => (
-                    <tr key={expense.id}>
-                      <td>{expense.date}</td>
-                      <td>{expense.description}</td>
-                      <td>${expense.amount.toFixed(2)}</td>
-                      <td>
-                        <span
-                          className={`badge ${
-                            expense.status === 'Approved'
-                              ? 'bg-success'
-                              : expense.status === 'Pending'
-                              ? 'bg-warning'
-                              : 'bg-danger'
-                          }`}
-                        >
-                          {expense.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+          <div className="list-group">
+            {expenses
+              .filter((expense) =>
+                expense.description.toLowerCase().includes(expenseFilter.toLowerCase())
+              )
+              .map((expense) => (
+                <div key={expense.id} className="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 className="mb-1">{expense.description}</h6>
+                    <small className="text-muted">{expense.date}</small>
+                  </div>
+                  <div className="text-end">
+                    <p className="mb-1">${expense.amount.toFixed(2)}</p>
+                    <span
+                      className={`badge ${
+                        expense.status === 'Approved'
+                          ? 'bg-success'
+                          : expense.status === 'Pending'
+                          ? 'bg-warning'
+                          : 'bg-danger'
+                      }`}
+                    >
+                      {expense.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       </div>
