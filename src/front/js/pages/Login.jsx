@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 export const Login = () => {
   const [activeTab, setActiveTab] = useState('login');
   const { store, actions } = useContext(Context);
-  const [fullname, setFullname] = useState('');
+  const [fullname, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -109,7 +109,7 @@ export const Login = () => {
                 type="text" 
                 className="form-control bg-dark text-white"
                 value={fullname} 
-                onChange={setFullname}
+                onChange={(e) => setFullName(e.target.value)}
                 placeholder="Nombre Apellido" 
                 required />
                 
