@@ -1,32 +1,50 @@
 """
-In this file, you can add as many commands as you want using the @app.cli.command decorator
-Flask commands are usefull to run cronjobs or tasks outside of the API but sill in integration 
-with youy database, for example: Import the price of bitcoin every night as 12am
+En este archivo, puedes agregar tantos comandos como desees usando el decorador @app.cli.command.
+Los comandos de Flask son útiles para ejecutar cronjobs o tareas fuera de la API pero aún en integración
+con tu base de datos, por ejemplo: Importar el precio de bitcoin cada noche a las 12am.
 """
 import click
-from api.models import db, Users
+from api.models import db, Users, Companies
 
 
 def setup_commands(app):
     """ 
-    This is an example command "insert-test-users" that you can run from the command line
-    by typing: $ flask insert-test-users 5
-    Note: 5 is the number of users to add
+    Este es un comando de ejemplo "insert-test-users" que puedes ejecutar desde la línea de comandos
+    escribiendo: $ flask insert-test-users 5
+    Nota: 5 es el número de usuarios a agregar
     """
-    @app.cli.command("insert-test-users")  # Name of our command
-    @click.argument("count")  # Argument of out command
+    @app.cli.command("insert-test-users")  # Nombre de nuestro comando
+    @click.argument("count")  # Argumento de nuestro comando
     def insert_test_users(count):
-        print("Creating test users")
+        print("Creando usuarios de prueba")
         for x in range(1, int(count) + 1):
             user = Users()
-            user.email = "test_user" + str(x) + "@test.com"
+            user.email = f"test_user{x}@test.com"  # Usar f-string para mayor claridad
             user.password = "123456"
             user.is_active = True
             db.session.add(user)
             db.session.commit()
-            print("User: ", user.email, " created.")
-        print("All test users created")
+            print("Usuario: ", user.email, " creado.")
+        print("Todos los usuarios de prueba creados")
 
     @app.cli.command("insert-test-data")
     def insert_test_data():
-        pass
+        # Insertar datos de prueba en la base de datos
+        # Crear Compañía 0
+        company = Companies()
+        company.name = "AnDiGu"
+        company.id = 0
+        db.session.add(company)
+        
+        # Crear Usuarios Diego, Guillermo, Anthony
+        for email in ["diego@andigu.com", "guillermo@andigu.com", "anthony@andigu.com"]:
+            user = Users()
+            user.email = email
+            user.password = "123456"
+            user.is_active = True
+            user.company_id = 0
+            user.is_app_admin = True
+            db.session.add(user)
+        
+        db.session.commit()
+        print("Datos de prueba insertados")
