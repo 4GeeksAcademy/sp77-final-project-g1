@@ -6,9 +6,7 @@ from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from datetime import datetime, timezone
 from api.models import db, Companies, Users, Administrators, Applications, Histories, Expenses, Employees
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 # import requests
 
 api = Blueprint('api', __name__)
@@ -25,7 +23,7 @@ def login():
     if not user:
         response_body["message"]="Bad email or password"
         return response_body, 401
-    access_token = create_access_token(identity={'email': user.email, 'user_id': user.id, 'is_app_admin': user.is_app_admin})
+    access_token = create_access_token(identity={'email': user.email, 'user_id': user.id, 'is_app_admin': user.is_app_admin, 'company_id': user.company_id})
     response_body["message"] = f'Bienvenida {email}'
     response_body['results'] = user.serialize()
     return response_body, 200
@@ -35,12 +33,14 @@ def signup():
     response_body = {}
     data = request.json
     row = Users(email = data.get("email"),
-                fullname = data.get("fullname"),
                 password = data.get("password"),
-                is_active = True)
+                is_active = True,
+                is_app_admin = False,
+                company_id = 1)
+
     db.session.add(row)
     db.session.commit()
-    response_body['message'] = f"Bienvenido {email}"
+    response_body['message'] = f'Bienvenido {data.get("email")}'
     response_body['results'] = {}
     return response_body, 200
 

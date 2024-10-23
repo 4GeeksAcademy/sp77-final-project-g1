@@ -6,7 +6,7 @@ export const Expenses = ({ expenses = [] }) => {
     description: '',
     amount: '',
     category: '',
-    date: '',
+    date: new Date().toISOString().split('T')[0],
     file: null,
   });
   const [expenseFilter, setExpenseFilter] = useState('');
@@ -23,6 +23,7 @@ export const Expenses = ({ expenses = [] }) => {
 
   const handleNewExpenseChange = (e) => {
     const { name, value } = e.target;
+    console.log(value)
     setNewExpense((prev) => ({ ...prev, [name]: value }));
   };
 
