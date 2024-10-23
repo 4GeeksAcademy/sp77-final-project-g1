@@ -1,48 +1,33 @@
 import React, { useState, useContext } from 'react';
 import { Context } from "../store/appContext.js";
 import { useNavigate } from "react-router-dom";
+import { SignUp } from '../component/SignUp.jsx';
 
 export const Login = () => {
   const [activeTab, setActiveTab] = useState('login');
   const { store, actions } = useContext(Context);
-  const [fullname, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Carga estado
   const navigate = useNavigate();
-
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
     const dataToSend = { email, password };
-    await actions.login(dataToSend)
+    await actions.login(dataToSend);
+    setIsLoading(false);
     if (store.isLoged) {
-      navigate("/dashboard")
+      navigate("/dashboard");
     } else {
-      navigate("/protected")
+      navigate("/protected");
     }
   };
-  const handleRegister = async (event) => {
-    event.preventDefault();
-    const dataToSend = {
-      email: "email",
-      fullname: "fullname",
-      password: "password",
-      is_active: "is_active"
-    };
-    await actions.newSignUp(dataToSend)
-    if (store.isLoged) {
-      navigate("/dashboard")
-    } else {
-      navigate("/protected")
-  }
-  }
   const passwordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
-  const handleEmail = (event) => setEmail(event.target.value)
-  const handlePassword = (event) => setPassword(event.target.value)
-
+  const handleEmail = (event) => setEmail(event.target.value);
+  const handlePassword = (event) => setPassword(event.target.value);
   return (
     <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: '#191919', backdropFilter: 'blur(5px)' }}>
       <div className="card bg-dark text-white border border-secondary shadow-lg p-4" style={{ maxWidth: '400px', width: '100%' }}>
@@ -90,61 +75,17 @@ export const Login = () => {
                     required
                   />
                   <span className="input-group-text" onClick={passwordVisibility} style={{ cursor: "pointer" }}>
-                    <i
-                      className={showPassword ? "fa-regular fa-eye-slash" : "fa-regular fa-eye"}
-                      style={{ fontSize: "1rem" }}
-                    ></i>
+                    <i className={showPassword ? "fa-regular fa-eye-slash" : "fa-regular fa-eye"} style={{ fontSize: "1rem" }}></i>
                   </span>
                 </div>
               </div>
-              <button type="submit" className="btn btn-secondary w-100">Iniciar sesión</button>
+              <button type="submit" className="btn btn-secondary w-100" disabled={isLoading}>
+                {isLoading ? "Cargando..." : "Iniciar sesión"}
+              </button>
             </form>
           )}
-
           {activeTab === 'register' && (
-            <form className="space-y-4" onSubmit={handleRegister}>
-              <div className="mb-3">
-                <label className="form-label">Nombre</label>
-                <input 
-                type="text" 
-                className="form-control bg-dark text-white"
-                value={fullname} 
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Nombre Apellido" 
-                required />
-                
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Correo electrónico</label>
-                <input type="email" 
-                className="form-control bg-dark text-white" 
-                value={email}
-                onChange={handleEmail}
-                placeholder="m@ejemplo.com" 
-                required />
-              </div>
-              <div className="input-group">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="form-control bg-dark text-white"
-                  placeholder="Password"
-                  value={password}
-                  onChange={handlePassword}
-                  required
-                />
-                <span className="input-group-text" onClick={passwordVisibility} style={{ cursor: "pointer" }}>
-                  <i
-                    className={showPassword ? "fa-regular fa-eye-slash" : "fa-regular fa-eye"}
-                    style={{ fontSize: "1rem" }}
-                  ></i>
-                </span>
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Confirmar contraseña</label>
-                <input type="password" className="form-control bg-dark text-white" id="register-confirm-password" required />
-              </div>
-              <button type="submit" className="btn btn-secondary w-100" nClick={() => signup()}>Registrarse</button>
-            </form>
+            <SignUp />
           )}
         </div>
       </div>
