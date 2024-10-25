@@ -102,7 +102,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-vh-100 bg-light text-dark">     
+    <div className="min-vh-100 bg-dark text-secondary">     
       <div className="container mt-4">
         <h1 className="mb-4">Dashboard</h1>
         

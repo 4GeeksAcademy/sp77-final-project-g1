@@ -1,4 +1,7 @@
 body {
-    background-color: #f8f9fa;
-    color: black;
+    background-color: black;
+    color: whitesmoke;
+}
+.btn {
+    color: blanchedalmond;
 }

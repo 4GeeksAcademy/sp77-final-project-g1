@@ -12,8 +12,8 @@ export const Navbar = () => {
     };
 
     return (
-        <div className="container">
-            <nav className="navbar navbar-expand-lg navbar-light shadow-md">
+        <div className="border-bottom border-secondary">
+            <nav className="navbar navbar-expand-lg navbar-dark shadow-md ">
                 <div className="container-fluid">
                     <span className="navbar-brand text-2xl font-semibold">
                         <Link to="/" className="nav-link text-secondary">
