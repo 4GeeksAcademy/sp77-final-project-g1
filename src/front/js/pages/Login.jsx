@@ -2,8 +2,11 @@ import React, { useState, useContext } from 'react';
 import { Context } from "../store/appContext.js";
 import { useNavigate } from "react-router-dom";
 import { SignUp } from '../component/SignUp.jsx';
+
 import { DollarSign, TrendingUp, PieChart, CreditCard, Briefcase, BarChart2, Activity, Percent } from 'lucide-react';
 const icons = [DollarSign, TrendingUp, PieChart, CreditCard, Briefcase, BarChart2, Activity, Percent];
+
+
 export const Login = () => {
   const [activeTab, setActiveTab] = useState('login');
   const { store, actions } = useContext(Context);
@@ -11,6 +14,7 @@ export const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Carga estado
   const navigate = useNavigate();
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -102,10 +106,20 @@ export const Login = () => {
                   </span>
                 </div>
               </div>
+              
               <button type="submit" className="btn btn-secondary w-100 mt-3 p-2" disabled={isLoading}>
                 {isLoading ? "Cargando..." : "Iniciar sesión"}
               </button>
             </form>
+
+              <button type="submit" className="btn btn-secondary w-100" disabled={isLoading}>
+                {isLoading ? "Cargando..." : "Iniciar sesión"}
+              </button>
+            </form>
+          )}
+          {activeTab === 'register' && (
+            <SignUp />
+
           )}
           {activeTab === 'register' && <SignUp />}
         </div>
