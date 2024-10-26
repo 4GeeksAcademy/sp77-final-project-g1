@@ -30,21 +30,25 @@ def setup_commands(app):
     @app.cli.command("insert-test-data")
     def insert_test_data():
         # Insertar datos de prueba en la base de datos
-        # Crear Compañía 0
-        company = Companies()
-        company.name = "AnDiGu"
-        company.id = 0
-        db.session.add(company)
-        
+        # Comprobar si la Compañía 0 ya existe
+        company = Companies.query.get(0)
+        if not company:
+            company = Companies()
+            company.name = "AnDiGu"
+            company.id = 0
+            db.session.add(company)
+
         # Crear Usuarios Diego, Guillermo, Anthony
         for email in ["diego@andigu.com", "guillermo@andigu.com", "anthony@andigu.com"]:
-            user = Users()
-            user.email = email
-            user.password = "123456"
-            user.is_active = True
-            user.company_id = 0
-            user.is_app_admin = True
-            db.session.add(user)
+            user = Users.query.filter_by(email=email).first()
+            if not user:
+                user = Users()
+                user.email = email
+                user.password = "123456"
+                user.is_active = True
+                user.company_id = 0
+                user.is_app_admin = True
+                db.session.add(user)
         
         db.session.commit()
         print("Datos de prueba insertados")

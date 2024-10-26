@@ -24,6 +24,7 @@ class Users(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     is_app_admin = db.Column(db.Boolean(), unique=False, nullable=False)
+    is_company_admin = db.Column(db.Boolean(), default=False, nullable=False)
     date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'))
     companies_to = db.relationship('Companies', foreign_keys=[company_id], backref=db.backref('users_to'), lazy='select')
@@ -36,6 +37,7 @@ class Users(db.Model):
                 'email': self.email,
                 'is_active': self.is_active,
                 'is_app_admin': self.is_app_admin,
+                'is_company_admin': self.is_company_admin,
                 'date': self.date,
                 'company_id': self.company_id}
 
