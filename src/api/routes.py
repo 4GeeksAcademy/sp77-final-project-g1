@@ -28,6 +28,7 @@ def login():
     response_body['results'] = user.serialize()
     return response_body, 200
 
+
 @api.route("/sign-up", methods=['POST'])
 def signup():
     response_body = {}
@@ -135,19 +136,19 @@ def administrators():
         response_body['results'] = result
         return response_body, 200
     if request.method == 'POST':
-        data = request.get_json()
         if user.company_id != 0 and not user.is_company_admin:
             response_body['message'] = 'Permiso denegado para crear administradores'
             return response_body, 403
+        data = request.json
         row = Administrators(name=data.get('name'),
-                                   last_name=data.get('last_name'),
-                                   date=datetime.now(),
-                                   user_id=data.get('user_id'),
-                                   company_id=user.company_id)
+                             last_name=data.get('last_name'),
+                             date=datetime.now(),
+                             user_id=data.get('user_id'),
+                             company_id=user.company_id)
         db.session.add(row)
         db.session.commit()
         response_body['message'] = 'Administrador creado exitosamente'
-        response_body['results'] = new_admin.serialize()
+        response_body['results'] = row.serialize()
         return response_body, 201
 
 
@@ -239,21 +240,21 @@ def histories():
             response_body['result'] = {}
             return response_body, 404
         result = [row.serialize() for row in rows]
-        response_body['message'] = 'Historial (GET)'
+        response_body['message'] = 'Historial encontrado (GET)'
         response_body['results'] = result
         return response_body, 200
     if request.method == 'POST':
-        data = request.json()
         if not user.is_company_admin and not user.is_app_admin and not user.is_employee:
-            response_body['message'] = 'Permiso denegado. Solo para empleados o administradores'
+            response_body['message'] = 'Permiso denegado'
             return response_body, 403
+        data = request.json
         row = History(period = data.get('period'),
                       amount = data.get('amount'),
                       employee_id=current_user,
                       company_id=user.company_id)
         db.session.add(row)
         db.session.commit()
-        response_body['message'] = 'Creando un revision historial (POST)'
+        response_body['message'] = 'Historial creado exitosamente (POST)'
         response_body['results'] = row.serialize()
         return response_body, 201
 
@@ -270,24 +271,22 @@ def expenses():
     if request.method == 'GET':
         rows = db.session.execute(db.select(Expenses)).scalars()
         if not rows:
-            response_body['message'] = f'Gastos no existen'
-            response_body['result'] = {}
+            response_body['message'] = 'No existen gastos registrados'
+            response_body['results'] = []
             return response_body, 404
         result = [row.serialize() for row in rows]
-        response_body['message'] = 'Gastos (GET)'
+        response_body['message'] = 'Gastos encontrados (GET)'
         response_body['results'] = result
         return response_body, 200
     if request.method == 'POST':
-        data = request.json()
-        if not user.is_company_admin and not user.is_app_admin and not user.is_employee:
-            response_body['message'] = 'Permiso denegado. Solo los empleados o administradores pueden crear solicitudes'
-            return response_body, 403
-        row = Companies(amount = float(data.form.get('amount')),
-                        vouchers = data.form.get('vouchers'),
-                        date = datetime.now())
+        data = request.json
+        row = Expenses(amount=float(data.get('amount')),
+                       vouchers=data.get('vouchers'),
+                       date=datetime.now(),
+                       user_id=user.id)
         db.session.add(row)
         db.session.commit()
-        response_body['message'] = 'Creando un revision historial (POST)'
+        response_body['message'] = 'Gasto creado exitosamente (POST)'
         response_body['results'] = row.serialize()
         return response_body, 201
 
@@ -325,60 +324,30 @@ def company(id):
         return response_body, 200
 
 
-@api.route('/users/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+@api.route('/administrators/<int:id>', methods=['GET', 'PUT', 'DELETE'])
 @jwt_required()
-def user(id):
+def admin(id):
     response_body = {}
     current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user)
+    user = db.session.get(Users, current_user)   
     if not user.is_app_admin and not user.is_company_admin:
         response_body['message'] = 'Permiso denegado'
         return response_body, 403
-        rows = db.session.execute(db.select(Users).where(Users.id == id)).scalar()
-    if not rows:
-        response_body['message'] = 'Usuario no existe'
-        response_body['result'] = {}
-        return response_body, 404
-    if request.method == 'GET':
-        if user.company_id == 0:  # Compañía 0
-            response_body['message'] = 'Usuario (GET)'
-            response_body['results'] = rows.serialize()
-            return response_body, 200
-        else:  # Si es un administrador de compañía distinta a la 0
-            if rows.company_id != user.company_id:  
-                response_body['message'] = 'No se encontró el usuario'
-                response_body['results'] = []
-                return response_body, 404
-            response_body['message'] = 'Usuario (GET)'
-            response_body['results'] = rows.serialize()
-            return response_body, 200
-    if request.method == 'PUT':
-        data = request.json  
-        rows.email = data.get('email')
-        rows.password = data.get('password')
-        rows.is_active = data.get('is_active')
-        db.session.commit()
-        response_body['message'] = f'El usuario {id} ha sido modificado'
-        response_body['result'] = rows.serialize()
-        return response_body, 200
-    if request.method == 'DELETE':
-        db.session.delete(rows)
-        db.session.commit()
-        response_body['message'] = f'Usuario eliminado'
-        response_body['result'] = {}
-        return response_body, 200
-
-
-@api.route('/administrators/<int:id>', methods=['GET','PUT', 'DELETE'])
-def admin(id):
-    response_body = {}
     rows = db.session.execute(db.select(Administrators).where(Administrators.id == id)).scalar()
     if not rows:
-        response_body['message'] = f'Administrador no existe'
+        response_body['message'] = 'Administrador no existe'
         response_body['result'] = {}
         return response_body, 404
     if request.method == 'GET':
-        response_body['message'] = 'Administrador (GET)'
+        if user.company_id == 0:
+            response_body['message'] = 'Administrador encontrado (GET)'
+            response_body['results'] = rows.serialize()
+            return response_body, 200
+        elif rows.company_id != user.company_id:
+            response_body['message'] = 'No se encontró el administrador en su compañía'
+            response_body['results'] = []
+            return response_body, 404
+        response_body['message'] = 'Administrador encontrado (GET)'
         response_body['results'] = rows.serialize()
         return response_body, 200
     if request.method == 'PUT':
@@ -386,27 +355,41 @@ def admin(id):
         rows.name = data.get('name')
         rows.last_name = data.get('last_name')
         db.session.commit()
-        response_body['message'] = f'El Administrador {id} ha sido modificada'
+        response_body['message'] = f'El Administrador {id} ha sido modificado'
         response_body['result'] = rows.serialize()
         return response_body, 201
     if request.method == 'DELETE':
         db.session.delete(rows)
         db.session.commit()
-        response_body['message'] = f'Administrador eliminado'
+        response_body['message'] = 'Administrador eliminado'
         response_body['result'] = {}
         return response_body, 200
 
 
-@api.route('/employees/<int:id>', methods=['GET','PUT', 'DELETE'])
+@api.route('/employees/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def employee(id):
     response_body = {}
+    current_user = get_jwt_identity()
+    user = db.session.get(Users, current_user)
+    if not user.is_app_admin and not user.is_company_admin:
+        response_body['message'] = 'Permiso denegado'
+        return response_body, 403
     rows = db.session.execute(db.select(Employees).where(Employees.id == id)).scalar()
     if not rows:
-        response_body['message'] = f'Empleado no existe'
+        response_body['message'] = 'Empleado no existe'
         response_body['result'] = {}
         return response_body, 404
     if request.method == 'GET':
-        response_body['message'] = 'Empleado (GET)'
+        if user.company_id == 0:
+            response_body['message'] = 'Empleado encontrado (GET)'
+            response_body['results'] = rows.serialize()
+            return response_body, 200
+        elif rows.company_id != user.company_id:
+            response_body['message'] = 'No se encontró al empleado en su compañía'
+            response_body['results'] = []
+            return response_body, 404
+        response_body['message'] = 'Empleado encontrado (GET)'
         response_body['results'] = rows.serialize()
         return response_body, 200
     if request.method == 'PUT':
@@ -415,27 +398,33 @@ def employee(id):
         rows.last_name = data.get('last_name')
         rows.budget_limit = data.get('budget_limit')
         db.session.commit()
-        response_body['message'] = f'El empleado {id} ha sido modificada'
+        response_body['message'] = f'El empleado {id} ha sido modificado'
         response_body['result'] = rows.serialize()
         return response_body, 201
     if request.method == 'DELETE':
         db.session.delete(rows)
         db.session.commit()
-        response_body['message'] = f'Empleado eliminado'
+        response_body['message'] = 'Empleado eliminado'
         response_body['result'] = {}
         return response_body, 200
     
 
-@api.route('/applications/<int:id>', methods=['GET','PUT', 'DELETE'])
+@api.route('/applications/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def application(id):
     response_body = {}
+    current_user = get_jwt_identity()
+    user = db.session.get(Users, current_user)
     rows = db.session.execute(db.select(Applications).where(Applications.id == id)).scalar()
     if not rows:
-        response_body['message'] = f'solicitud no existe'
+        response_body['message'] = 'Solicitud no existe'
         response_body['result'] = {}
         return response_body, 404
+    if not (user.is_app_admin or user.is_company_admin or rows.employee_id == user.id):
+        response_body['message'] = 'Permiso denegado'
+        return response_body, 403
     if request.method == 'GET':
-        response_body['message'] = 'solicitudes (GET)'
+        response_body['message'] = 'Solicitud encontrada (GET)'
         response_body['results'] = rows.serialize()
         return response_body, 200
     if request.method == 'PUT':
@@ -446,41 +435,60 @@ def application(id):
         rows.reviewed_date = data.get('reviewed_date')
         rows.is_approved = data.get('is_approved')
         db.session.commit()
-        response_body['message'] = f'solicitud {id} ha sido modificada'
+        response_body['message'] = f'Solicitud {id} ha sido modificada'
         response_body['result'] = rows.serialize()
         return response_body, 201
     if request.method == 'DELETE':
         db.session.delete(rows)
         db.session.commit()
-        response_body['message'] = f'solicitud eliminado'
+        response_body['message'] = 'Solicitud eliminada'
         response_body['result'] = {}
         return response_body, 200
     
 
 @api.route('/histories/<int:id>', methods=['GET'])
+@jwt_required()
 def history(id):
     response_body = {}
+    current_user = get_jwt_identity()
+    user = db.session.get(Users, current_user)
+    if not (user.is_app_admin or user.is_company_admin or user.is_employee):
+        response_body['message'] = 'Permiso denegado'
+        return response_body, 403
     rows = db.session.execute(db.select(Histories).where(Histories.id == id)).scalar()
     if not rows:
-        response_body['message'] = f'Historial no existe'
-        response_body['result'] = {}
+        response_body['message'] = 'Historial no existe'
+        response_body['results'] = {}
         return response_body, 404
+    if user.is_employee and rows.employee_id != user.id:
+        response_body['message'] = 'Permiso denegado para este historial'
+        response_body['results'] = {}
+        return response_body, 403
     if request.method == 'GET':
-        response_body['message'] = 'Historial (GET)'
+        response_body['message'] = 'Historial encontrado (GET)'
         response_body['results'] = rows.serialize()
         return response_body, 200
 
 
-@api.route('/expenses/<int:id>', methods=['GET','PUT', 'DELETE'])
+@api.route('/expenses/<int:id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def expenditure(id):
     response_body = {}
+    current_user = get_jwt_identity()
+    user = db.session.get(Users, current_user)
+    if not (user.is_app_admin or user.is_company_admin or user.is_employee):
+        response_body['message'] = 'Permiso denegado'
+        return response_body, 403
     rows = db.session.execute(db.select(Expenses).where(Expenses.id == id)).scalar()
     if not rows:
-        response_body['message'] = f'gasto no existe'
+        response_body['message'] = 'Gasto no existe'
         response_body['result'] = {}
         return response_body, 404
+    if not (user.is_app_admin or user.is_company_admin or rows.user_id == user.id):
+        response_body['message'] = 'Permiso denegado'
+        return response_body, 403
     if request.method == 'GET':
-        response_body['message'] = 'gasto (GET)'
+        response_body['message'] = 'Gasto encontrado (GET)'
         response_body['results'] = rows.serialize()
         return response_body, 200
     if request.method == 'PUT':
@@ -488,15 +496,16 @@ def expenditure(id):
         rows.amount = data.get('amount')
         rows.vouchers = data.get('vouchers')
         db.session.commit()
-        response_body['message'] = f'gasto {id} ha sido modificada'
-        response_body['result'] = rows.serialize()
-        return response_body, 201
+        response_body['message'] = f'Gasto {id} ha sido modificado'
+        response_body['results'] = rows.serialize()
+        return response_body, 200
     if request.method == 'DELETE':
         db.session.delete(rows)
         db.session.commit()
-        response_body['message'] = f'gasto eliminado'
-        response_body['result'] = {}
+        response_body['message'] = 'Gasto eliminado'
+        response_body['results'] = {}
         return response_body, 200
+
 
 @api.route('/api/register-company', methods=['POST'])
 def newCompany():
@@ -511,67 +520,43 @@ def newCompany():
     return response_body, 201
 
 
-@api.route('/api/register-admin', methods=['POST'])
-@jwt_required()
-def newAdmin():
-    response_body = {}
-    current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user)
-    if not user.is_company_admin:
-        response_body['message'] = 'Permiso denegado para crear administradores'
-        return response_body, 403
-    data = request.json()
-    row = Administrators(name = data.get('name'),
-                         last_name = data.get('last_name'),
-                         date = datetime.now(),
-                         user_id = data.get('user_id'),
-                         company_id=user.company_id)
-    db.session.add(row)
-    db.session.commit()
-    response_body['message'] = 'Administrador registrado exitosamente'
-    response_body['results'] = row.serialize()
-    return response_body, 201
-
-
-@api.route('/api/create-employee', methods=['POST'])
-@jwt_required()
-def newEmployee():
-    response_body = {}
-    current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user)
-    if not user.is_company_admin:
-        response_body['message'] = 'Permiso denegado para crear empleados'
-        return response_body, 403
-    data = request.json()
-    row = Employees(name=data.get('name'),
-                    last_name=data.get('last_name'),
-                    date=datetime.now(),
-                    user_id=data.get('user_id'),
-                    budget_limit=data.get('budget_limit'),
-                    company_id=user.company_id)
-    db.session.add(row)
-    db.session.commit()
-    response_body['message'] = 'Empleado registrado exitosamente'
-    response_body['results'] = row.serialize()
-    return response_body, 201
-
-
 @api.route('/api/create-applications', methods=['POST'])
 @jwt_required()
 def new_application():
     response_body = {}
     current_user = get_jwt_identity()
     user = db.session.get(Users, current_user)
-    if not user.is_company_admin:
-        response_body['message'] = 'Permiso denegado para crear solicitud'
+    if not (user.is_company_admin or user.is_employee):
+        response_body['message'] = 'Permiso denegado para crear una solicitud'
         return response_body, 403
-    data = request.get_json()
-    row = Application(description=data.get('description'),
-                      amount=data.get('amount'),
-                      employee_id=current_user,
-                      company_id=user.company_id)
+    data = request.json
+    row = Applications(description=data.get('description'),
+                       amount=data.get('amount'),
+                       employee_id=user.id,
+                       company_id=user.company_id)
     db.session.add(row)
     db.session.commit()
     response_body['message'] = 'Solicitud registrada exitosamente'
+    response_body['results'] = row.serialize()
+    return response_body, 201
+
+
+@api.route('/api/add-expenses', methods=['POST'])
+@jwt_required()
+def newExpenditure():
+    response_body = {}
+    current_user = get_jwt_identity()
+    user = db.session.get(Users, current_user)
+    if not (user.is_company_admin or user.is_employee):
+        response_body['message'] = 'Permiso denegado para crear un gasto'
+        return response_body, 403
+    data = request.json
+    row = Expenses(amount=float(data.get('amount')),
+                   vouchers=data.get('vouchers'),
+                   date=datetime.now(),
+                   user_id=user.id)
+    db.session.add(row)
+    db.session.commit()
+    response_body['message'] = 'Gasto registrado exitosamente'
     response_body['results'] = row.serialize()
     return response_body, 201
