@@ -51,12 +51,6 @@ export const Navbar = () => {
                                     Reports
                                 </a>
                             </li>
-                            <li className="nav-item">
-                                <Link to="/login" className="nav-link">
-                                    <i className="fa-regular fa-credit-card me-1"></i>
-                                    Login
-                                </Link>
-                            </li>
                         </ul>
                         <div className="d-flex align-items-center">
                             <button
@@ -122,4 +116,4 @@ export const Navbar = () => {
             </nav>
         </div>
     );
-};
+}
