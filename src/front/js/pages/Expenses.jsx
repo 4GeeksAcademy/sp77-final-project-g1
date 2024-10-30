@@ -38,9 +38,9 @@ export const Expenses = ({ expenses = [] }) => {
   return (
     <div className="container mt-4">
       <div className="card">
-        <div className="card-header d-flex justify-content-between align-items-center">
+        <div className="card-header d-flex bg-dark justify-content-between align-items-center">
           <h5>Expenses</h5>
-          <button className="btn btn-dark" onClick={() => setShowModal(true)}>
+          <button className="btn btn-secondary" onClick={() => setShowModal(true)}>
             <i className="fa fa-plus mr-2"></i> Add Expense
           </button>
         </div>
@@ -87,8 +87,8 @@ export const Expenses = ({ expenses = [] }) => {
       {showModal && (
         <div className="modal show d-block" tabIndex="-1" role="dialog">
           <div className="modal-dialog" role="document">
-            <div className="modal-content">
-              <div className="modal-header">
+            <div className="modal-content text-dark">
+              <div className="modal-header bg-dark text-light">
                 <h5 className="modal-title">Add New Expense</h5>
                 <button
                   type="button"
