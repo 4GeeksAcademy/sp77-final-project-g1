@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Context } from "../store/appContext.js";
 import { Logo } from "./Logo.jsx";
 import { ButtonCreateAdmin } from "./ButtonCreateAdmin.jsx";
+import { ButtonCreateEmployee } from "./ButtonCreateEmployee.jsx";
 
 export const Navbar = () => {
     const { actions } = useContext(Context)
@@ -56,6 +57,7 @@ export const Navbar = () => {
                             <li>
                                 <ButtonCreateAdmin />
                             </li>
+                            <ButtonCreateEmployee />
                         </ul>
                         <div className="d-flex align-items-center">
                             <button
