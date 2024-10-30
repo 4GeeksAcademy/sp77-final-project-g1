@@ -2,6 +2,8 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { Context } from "../store/appContext.js";
+import { Logo } from "./Logo.jsx";
+import { ButtonCreateAdmin } from "./ButtonCreateAdmin.jsx";
 import { ButtonCreateEmployee } from "./ButtonCreateEmployee.jsx";
 
 export const Navbar = () => {
@@ -18,7 +20,7 @@ export const Navbar = () => {
                 <div className="container-fluid">
                     <span className="navbar-brand text-2xl font-semibold">
                         <Link to="/" className="nav-link text-secondary">
-                            AnDiGu Expenses Tracker
+                            <Logo />
                         </Link>
                     </span>
                     <button
@@ -51,6 +53,9 @@ export const Navbar = () => {
                                     <i className="fa-solid fa-chart-pie me-1"></i>
                                     Reports
                                 </a>
+                            </li>
+                            <li>
+                                <ButtonCreateAdmin />
                             </li>
                             <ButtonCreateEmployee />
                         </ul>
@@ -96,6 +101,7 @@ export const Navbar = () => {
                                             </div>
                                         </Link>
                                     </li>
+
                                     <li>
                                         <hr className="dropdown-divider" />
                                     </li>
