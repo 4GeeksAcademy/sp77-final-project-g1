@@ -13,6 +13,7 @@ import { Expenses } from "./pages/Expenses.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import { CompanyForm } from "./component/CompanyForm.jsx";
 import { Context } from "./store/appContext"; 
+import { EmployeeForm } from "./pages/EmployeeForm.jsx";
 
 
 const Layout = () => {
@@ -37,6 +38,7 @@ const Layout = () => {
                         <Route element={<Expenses />} path="/expenses" /> 
                         <Route element={<Dashboard />} path="/dashboard" />
                         <Route element={<CompanyForm />} path="/company-register" />
+                        <Route element={<EmployeeForm />} path="create-employee" />
                         <Route element={<h1>No encontrado!</h1>} path="*" />
                     </Routes>
                     <Footer />

@@ -2,9 +2,10 @@ import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { Context } from "../store/appContext.js";
+import { ButtonCreateEmployee } from "./ButtonCreateEmployee.jsx";
 
 export const Navbar = () => {
-    const {actions} = useContext(Context)
+    const { actions } = useContext(Context)
     const navigate = useNavigate();
     const [isDarkMode, setIsDarkMode] = useState(false);
     const toggleDarkMode = () => {
@@ -51,6 +52,7 @@ export const Navbar = () => {
                                     Reports
                                 </a>
                             </li>
+                            <ButtonCreateEmployee />
                         </ul>
                         <div className="d-flex align-items-center">
                             <button
