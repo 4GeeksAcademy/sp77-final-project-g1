@@ -56,7 +56,7 @@ export const EmployeeForm = () => {
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="Número de identifación"
+                    placeholder="Número de identificación"
                     value={idNumber}
                     onChange={(e) => setIdNumber(e.target.value)}
                     required
