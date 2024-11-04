@@ -102,76 +102,88 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-vh-100 bg-dark text-secondary">     
-      <div className="container mt-4">
-        <h1 className="mb-4">Dashboard</h1>
-        
-        {/* Dashboard summary */}
-        <div className="row g-4 mb-4">
-          {/* Total Expenses */}
-          <div className="col-lg-4">
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <h5 className="card-title">Total Expenses</h5>
-                <h2 className="card-text">${dashboardData.totalExpenses.toFixed(2)}</h2>
-                <p className="card-subtitle text-muted">+20.1% from last month</p>
-              </div>
-            </div>
-          </div>
-          {/* Pending Approvals */}
-          <div className="col-lg-4">
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <h5 className="card-title">Pending Approvals</h5>
-                <h2 className="card-text">{dashboardData.pendingApprovals}</h2>
-                <p className="card-subtitle text-muted">3 urgent requests</p>
-              </div>
-            </div>
-          </div>
-          {/* Budget Usage */}
-          <div className="col-lg-4">
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <h5 className="card-title">Budget Usage</h5>
-                <h2 className="card-text">{dashboardData.budgetUsage}%</h2>
-                <div className="progress">
-                  <div className="progress-bar" role="progressbar" style={{ width: `${dashboardData.budgetUsage}%` }}></div>
-                </div>
-              </div>
+    <div className="container mt-2 border-radius min-vh-100 bg-dark text-secondary">
+    <div className="container mt-4">
+      <h1 className="mb-4 text-white">Dashboard</h1>
+
+      {/* Dashboard summary */}
+      <div className="row g-4 mb-4">
+        {/* Total Expenses */}
+        <div className="col-lg-4">
+          <div className="card shadow-sm bg-success text-white">
+            <div className="card-body">
+              <h5 className="card-title">Total Expenses</h5>
+              <h2 className="card-text">${dashboardData.totalExpenses.toFixed(2)}</h2>
+              <p className="card-subtitle text-white-50">+20.1% from last month</p>
             </div>
           </div>
         </div>
-
-        {/* Recent Expenses */}
-        <div className="card shadow-sm mb-4">
-          <div className="card-header">
-            <h5>Recent Expenses</h5>
+        {/* Pending Approvals */}
+        <div className="col-lg-4">
+          <div className="card shadow-sm bg-warning text-dark">
+            <div className="card-body">
+              <h5 className="card-title">Pending Approvals</h5>
+              <h2 className="card-text">{dashboardData.pendingApprovals}</h2>
+              <p className="card-subtitle text-dark-50">3 urgent requests</p>
+            </div>
           </div>
-          <div className="card-body">
-            <input
-              type="search"
-              className="form-control mb-3"
-              placeholder="Search expenses"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-            <ul className="list-group">
-              {dashboardData.recentExpenses.map(expense => (
-                <li className="list-group-item d-flex justify-content-between align-items-center" key={expense.id}>
-                  <div>
-                    <h6>{expense.description}</h6>
-                    <p className="mb-0 text-muted">{expense.date}</p>
-                  </div>
-                  <span className={`badge ${expense.status === 'Approved' ? 'bg-success' : expense.status === 'Pending' ? 'bg-warning' : 'bg-danger'}`}>
-                    {expense.status}
-                  </span>
-                  <h6 className="mb-0">${expense.amount.toFixed(2)}</h6>
-                </li>
-              ))}
-            </ul>
+        </div>
+        {/* Budget Usage */}
+        <div className="col-lg-4">
+          <div className="card shadow-sm" style={{ backgroundColor: '#D8110F', color: '#350602' }}>
+            <div className="card-body">
+              <h5 className="card-title">Budget Usage</h5>
+              <h2 className="card-text">{dashboardData.budgetUsage}%</h2>
+              <div className="progress wave-progress" >
+                <div
+                  className="progress-bar wave"
+                  role="progressbar"
+                  style={{ width: `${dashboardData.budgetUsage}%`,  backgroundColor: '#B10A24', color: '#350602'}}
+                ></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Recent Expenses */}
+      <div className="card shadow-sm mb-4">
+        <div className="card-header bg-secondary text-white">
+          <h5>Recent Expenses</h5>
+        </div>
+        <div className="card-body">
+          <input
+            type="search"
+            className="form-control mb-3"
+            placeholder="Search expenses"
+            value={searchQuery}
+            onChange={handleSearchChange}
+          />
+          <ul className="list-group">
+            {dashboardData.recentExpenses.map((expense) => (
+              <li className="list-group-item d-flex justify-content-between align-items-center" key={expense.id}>
+                <div>
+                  <h6>{expense.description}</h6>
+                  <p className="mb-0 text-muted">{expense.date}</p>
+                </div>
+                <span
+                  className={`badge ${
+                    expense.status === 'Approved'
+                      ? 'bg-success'
+                      : expense.status === 'Pending'
+                      ? 'bg-warning'
+                      : 'bg-danger'
+                  }`}
+                >
+                  {expense.status}
+                </span>
+                <h6 className="mb-0">${expense.amount.toFixed(2)}</h6>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
+  </div>
   )
 }
