@@ -77,7 +77,7 @@ export const ProfilePage = ({
         .profile-card {
           width: 100%;
           max-width: 56rem;
-          background-color: #2d3748;
+          background-color: #212529;
           border-radius: 0.5rem;
           box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
@@ -163,7 +163,7 @@ export const ProfilePage = ({
           width: 100%;
           padding: 1.5rem 1rem;
           font-size: 1.125rem;
-          background-color: #4a5568;
+          background-color: #404040;
           color: white;
           border: 1px solid #4a5568;
           border-radius: 0.375rem;
@@ -181,14 +181,14 @@ export const ProfilePage = ({
           font-size: 1.125rem;
           font-weight: 500;
           color: white;
-          background-color: #4a5568;
+          background-color: #404040;
           border: none;
           border-radius: 0.375rem;
           cursor: pointer;
           transition: background-color 0.2s;
         }
         .profile-button:hover {
-          background-color: #718096;
+          background-color: #7F7F7F;
         }
         @media (min-width: 768px) {
           .profile-content {
