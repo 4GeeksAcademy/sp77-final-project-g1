@@ -86,7 +86,7 @@ export const Navbar = () => {
                                 </button>
                                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-basic">
                                     <li>
-                                        <Link className="dropdown-item" to="/profile">
+                                        <Link className="dropdown-item" to="/profile-page">
                                             <div className="d-flex align-items-center">
                                                 <i className="fa-regular fa-id-badge me-2"></i>
                                                 <span>Profile</span>
