@@ -19,7 +19,6 @@ import { AdminForm } from "./pages/AdminForm.jsx";
 import {ProfilePage} from "./pages/ProfilePage.jsx";
 
 
-
 const Layout = () => {
     const { store } = useContext(Context); 
     const basename = process.env.BASENAME || "";
@@ -29,7 +28,6 @@ const Layout = () => {
         <div className="d-flex flex-column min-vh-100">
             <BrowserRouter basename={basename}>
                 <ScrollToTop>
-                    {/* Mostrar el Navbar solo si el usuario está autenticado */}
                     {store.isLoged && <Navbar />}
                     <Routes>
                         <Route element={<Login />} path="/login" />

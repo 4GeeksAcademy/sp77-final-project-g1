@@ -7,7 +7,7 @@ import { ButtonCreateAdmin } from "./ButtonCreateAdmin.jsx";
 import { ButtonCreateEmployee } from "./ButtonCreateEmployee.jsx";
 
 export const Navbar = () => {
-    const { actions } = useContext(Context)
+    const { actions } = useContext(Context);
     const navigate = useNavigate();
     const [isDarkMode, setIsDarkMode] = useState(false);
     const toggleDarkMode = () => {
@@ -16,7 +16,7 @@ export const Navbar = () => {
 
     return (
         <div className="border-bottom border-secondary">
-            <nav className="navbar navbar-expand-lg navbar-dark shadow-md ">
+            <nav className="navbar navbar-expand-lg navbar-dark shadow-md">
                 <div className="container-fluid">
                     <span className="navbar-brand text-2xl font-semibold">
                         <Link to="/" className="nav-link text-secondary">
@@ -70,21 +70,24 @@ export const Navbar = () => {
                                     <i className="fa-regular fa-moon"></i>
                                 )}
                             </button>
-                            <button className="btn me-2">
-                                <i className="fa-regular fa-bell"></i>
-                            </button>
+                                <button
+                                    className="btn me-2"
+                                    aria-expanded="false"
+                                >
+                                    <i className="fa-regular fa-bell"></i>
+                                    </button>
                             <div className="dropdown">
                                 <button
                                     className="btn dropdown-toggle"
                                     type="button"
-                                    id="dropdown-basic"
+                                    id="profileDropdown"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false"
                                     style={{ width: '40px', height: '40px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                                 >
                                     <i className="fa-regular fa-user" style={{ fontSize: '20px' }}></i>
                                 </button>
-                                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-basic">
+                                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
                                     <li>
                                         <Link className="dropdown-item" to="/profile-page">
                                             <div className="d-flex align-items-center">
@@ -92,16 +95,15 @@ export const Navbar = () => {
                                                 <span>Profile</span>
                                             </div>
                                         </Link>
-                                    </li>
-                                    <li>
-                                        <Link className="dropdown-item" to="/settings">
+                                        <li>
+                                        <Link className="dropdown-item" to="/create-application">
                                             <div className="d-flex align-items-center">
-                                                <i className="fa-solid fa-sliders me-2"></i>
-                                                <span>Settings</span>
+                                            <i class="fa-solid fa-file-invoice-dollar me-2"></i>
+                                                <span>Requests</span>
                                             </div>
                                         </Link>
                                     </li>
-
+                                    </li>
                                     <li>
                                         <hr className="dropdown-divider" />
                                     </li>
