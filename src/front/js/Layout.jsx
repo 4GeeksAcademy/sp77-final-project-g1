@@ -17,6 +17,7 @@ import { ApplicationsForm } from "./pages/ApplicationsForm.jsx";
 import { Context } from "./store/appContext"; 
 import { AdminForm } from "./pages/AdminForm.jsx";
 import {ProfilePage} from "./pages/ProfilePage.jsx";
+import { EmployeesSumary } from "./pages/EmployeesSumary.jsx";
 
 
 const Layout = () => {
@@ -44,6 +45,7 @@ const Layout = () => {
                         <Route element={<EmployeeForm />} path="create-employee" />
                         <Route element={<ApplicationsForm />} path= "create-application" />
                         <Route element={<AdminForm />} path="/admin-form" />
+                        <Route element={<EmployeesSumary/>} path="/employees-sumary"/>
                         <Route element={<h1>No encontrado!</h1>} path="*" />
                     </Routes>
                     <Footer />
