@@ -130,17 +130,20 @@ class Histories(db.Model):
 
 class Expenses(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String, unique=False, nullable=False)
     amount = db.Column(db.Float, unique=False, nullable=False)
-    vouchers = db.Column(db.LargeBinary, nullable=False)
+    vouchers = db.Column(db.LargeBinary, nullable=True)
     date = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
-    applications_id = db.Column(db.Integer, db.ForeignKey('applications.id'))
-    applications_to = db.relationship('Applications', foreign_keys=[applications_id], backref=db.backref('applications_to', lazy='select'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('expenses_to', lazy='select'))
 
     def __ref__(self):
         return f'Expenses {self.id} - {self.amount} - {self.date}'
 
     def serialize(self):
         return {'id': self.id,
+                'description': self.description,
                 'amount': self.amount,
-                'date': self.date}
+                'date': self.date.isoformat(),
+                'vouchers': self.vouchers.decode('utf-8') if self.vouchers else None}
 

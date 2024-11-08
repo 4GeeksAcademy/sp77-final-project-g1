@@ -263,7 +263,7 @@ def histories():
 def expenses():
     response_body = {}
     current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user)
+    user = db.session.get(Users, current_user['user_id'])
     if not user.is_app_admin and not user.is_company_admin:
         response_body['message'] = 'Permiso denegado'
         return response_body, 403
@@ -276,13 +276,13 @@ def expenses():
         result = [row.serialize() for row in rows]
         response_body['message'] = 'Gastos encontrados (GET)'
         response_body['results'] = result
-        return response_body, 200
+        return jsonify(response_body), 200
     if request.method == 'POST':
         data = request.json
-        row = Expenses(amount=float(data.get('amount')),
+        row = Expenses(description=data.get('description'),
+                       amount=float(data.get('amount')),
                        vouchers=data.get('vouchers'),
-                       date=datetime.now(),
-                       user_id=user.id)
+                       date=datetime.now())
         db.session.add(row)
         db.session.commit()
         response_body['message'] = 'Gasto creado exitosamente (POST)'
