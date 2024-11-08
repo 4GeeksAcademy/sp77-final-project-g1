@@ -10,6 +10,7 @@ export const SignUp = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    
     const handleRegister = async (event) => {
         event.preventDefault();
         if (password !== confirmPassword) {

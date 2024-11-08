@@ -3,7 +3,9 @@ const getState = ({ getStore, getActions, setStore }) => {
     store: {
       user: '',
       isLoged: false,
-      expenses: []
+      expenses: [],
+      administrators:[],
+      employees:[]
     },
     actions: {
       getMessage: async () => {
@@ -94,6 +96,81 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
         getActions().getExpenses();
     },
+      addAdmin: async (dataToSend) => {
+                const uri = `${process.env.BACKEND_URL}/api/administrators`;
+                
+                const token = localStorage.getItem("token");
+                
+                const options = {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`  
+                  },
+                  body: JSON.stringify(dataToSend)
+                };
+  
+                const response = await fetch(uri, options);
+                
+                if (!response.ok) {
+                  console.log("Error:", response.status);
+                  return;
+                }
+                const data = await response.json();
+                setStore({ isLoged: true, administrators: data.results});  
+              },
+        addEmployee: async (dataToSend) => {
+                const uri = `${process.env.BACKEND_URL}/api/employees`;
+                const token = localStorage.getItem("token");
+                const options = {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`  
+                  },
+                  body: JSON.stringify(dataToSend)
+                };
+              
+                const response = await fetch(uri, options);
+                
+                if (!response.ok) {
+                  console.log("Error:", response.status);
+                  return;
+                }
+              
+                const data = await response.json();
+                setStore({ isLoged: true, employees: data.results});  
+              },
+        getAdministrators: async () => {
+                const token = localStorage.getItem('token');
+                const uri = `${process.env.BACKEND_URL}/api/administrators`;
+                const options = {
+                    method: 'GET',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,},};
+                const response = await fetch(uri, options);
+                if (!response.ok) {
+                    return;
+                }
+                const data = await response.json();
+                setStore({ administrators: data.results })
+            },
+        getEmployees: async () => {
+              const token = localStorage.getItem('token');
+              const uri = `${process.env.BACKEND_URL}/api/employees`;
+              const options = {
+                  method: 'GET',
+                  headers: {
+                      "Content-Type": "application/json",
+                      "Authorization": `Bearer ${token}`,},};
+              const response = await fetch(uri, options);
+              if (!response.ok) {
+                  return;
+              }
+              const data = await response.json();
+              setStore({ employees: data.results })
+          }
     },
   };
 };

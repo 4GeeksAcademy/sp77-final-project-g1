@@ -1,22 +1,31 @@
-// src/AdminForm.js
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Context } from "../store/appContext";
 
 export const AdminForm = () => {
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
-  const [idNumber, setIdNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const {store,actions} = useContext(Context)
+  const [isLoading, setIsLoading] = useState(false);
+ 
 
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const formData = { name, lastname, email, phone, address};
-    console.log("Datos del formulario:", formData);
-  };
+    const dataToSend = { 
+      name: name,
+      last_name: lastname
+    };
+    await actions.addAdmin(dataToSend);
+    setIsLoading(false);
+    if (store.isLoged) {
+        console.log("Usuario registrado correctamente");
+        navigate("/dashboard");
+    } else {
+        console.log("Error al registrar");
+    }
+};
 
   const handleCancel = () => {
     navigate("/dashboard");
@@ -49,46 +58,6 @@ export const AdminForm = () => {
                     placeholder="Apellido"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="col-12 my-2">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Número de identifación"
-                    value={idNumber}
-                    onChange={(e) => setIdNumber(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="col-12 my-2">
-                  <input
-                    type="email"
-                    className="form-control"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="col-12 my-2">
-                  <input
-                    type="tel"
-                    className="form-control"
-                    placeholder="Teléfono"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="col-12 my-2">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Dirección"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
                     required
                   />
                 </div>
