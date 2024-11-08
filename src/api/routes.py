@@ -26,6 +26,7 @@ def login():
     access_token = create_access_token(identity={'email': user.email, 'user_id': user.id, 'is_app_admin': user.is_app_admin, 'company_id': user.company_id})
     response_body["message"] = f'Bienvenida {email}'
     response_body['results'] = user.serialize()
+    response_body['access_token'] = access_token
     return response_body, 200
 
 
@@ -118,7 +119,7 @@ def users():
 def administrators():
     response_body = {}
     current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user)
+    user = db.session.get(Users, current_user['user_id'])
     if not user.is_app_admin and not user.is_company_admin:
         response_body['message'] = 'Permiso denegado'
         return response_body, 403
@@ -142,9 +143,8 @@ def administrators():
         data = request.json
         row = Administrators(name=data.get('name'),
                              last_name=data.get('last_name'),
-                             date=datetime.now(),
-                             user_id=data.get('user_id'),
-                             company_id=user.company_id)
+                             date_created=datetime.now(),
+                             user_id = data.get('user_id'))
         db.session.add(row)
         db.session.commit()
         response_body['message'] = 'Administrador creado exitosamente'
@@ -157,7 +157,7 @@ def administrators():
 def employees():
     response_body = {}
     current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user)
+    user = db.session.get(Users, current_user['user_id'])
     if not user.is_app_admin and not user.is_company_admin:
         response_body['message'] = 'Permiso denegado'
         return response_body, 403
@@ -172,16 +172,15 @@ def employees():
         response_body['results'] = result
         return response_body, 200
     if request.method == 'POST':
-        data = request.json()
         if user.company_id != 0 and not user.is_company_admin:
-            response_body['message'] = 'Permiso denegado para crear empleados'
+            response_body['message'] = 'Permiso denegado para crear administradores'
             return response_body, 403
-        row = Employees(name = data.get('name'),
-                        last_name = data.get('last_name'),
-                        date = datetime.now(),
-                        budget_limit = data.get('budget_limit'),
-                        user_id = data.get('user_id'),
-                        company_id=user.company_id)
+        data = request.json
+        row = Employees(name=data.get('name'),
+                             last_name=data.get('last_name'),
+                             date_created=datetime.now(),
+                             budget_limit= data.get('budget_limit'),
+                             user_id = data.get('user_id'))
         db.session.add(row)
         db.session.commit()
         response_body['message'] = 'Creando un empleado (POST)'
