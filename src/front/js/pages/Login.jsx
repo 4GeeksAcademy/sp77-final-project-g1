@@ -100,7 +100,7 @@ export const Login = () => {
               {isLoading ? "Cargando..." : "Iniciar sesión"}
             </button>
             <div className="mt-3 text-center">
-              <a href="tu-enlace-aqui" className="link-empresa text-secondary">
+              <a href="sign-up" className="link-empresa text-secondary">
                 Si eres empresa, regístrate.
               </a>
             </div>
