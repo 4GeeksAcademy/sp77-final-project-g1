@@ -13,7 +13,7 @@ export const EmployeesSumary = ()=>{
       <section className="mb-8 col-6">
         <h2 className="mt-4 border-bottom border-success me-4 mb-4 pb-2 border-b-2 border-secondary">
           <Users className="text-success m-2" />
-          Administrators
+          Administradores
         </h2>
         {store.administrators.length > 0 ? (
           <ul className="list-none">
@@ -38,7 +38,7 @@ export const EmployeesSumary = ()=>{
       <section className='col-6'>
         <h2 className="border-bottom border-warning me-4 mb-4 mt-4 pb-2">
           <Users className=" text-warning m-2" />
-          Employees
+          Empleados
         </h2>
         {store.employees.length > 0 ? (
           <ul className="list-none">
