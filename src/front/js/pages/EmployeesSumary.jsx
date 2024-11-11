@@ -9,8 +9,8 @@ export const EmployeesSumary = ()=>{
  actions.getEmployees()
  actions.getAdministrators()
   return (
-    <div className=" ms-4">
-      <section className="mb-8">
+    <div className=" ms-4 d-flex">
+      <section className="mb-8 col-6">
         <h2 className="mt-4 border-bottom border-success me-4 mb-4 pb-2 border-b-2 border-secondary">
           <Users className="text-success m-2" />
           Administrators
@@ -20,12 +20,13 @@ export const EmployeesSumary = ()=>{
             {store.administrators.map((admin) => (
               <li
                 key={admin.id}
-                className="list-unstyled p-4"
+                className="list-unstyled"
               >
                 <div className="flex items-center">
                   <UserCircle className="text-success h-8 w-8 m-2"/>
-                  <span className="text-lg">{admin.name}</span>
+                  <span className="text-lg">{admin.name} {admin.last_name}</span>
                 </div>
+                
               </li>
             ))}
           </ul>
@@ -34,8 +35,8 @@ export const EmployeesSumary = ()=>{
         )}
       </section>
 
-      <section>
-        <h2 className="border-bottom border-warning me-4 mb-4 pb-2">
+      <section className='col-6'>
+        <h2 className="border-bottom border-warning me-4 mb-4 mt-4 pb-2">
           <Users className=" text-warning m-2" />
           Employees
         </h2>
@@ -44,11 +45,11 @@ export const EmployeesSumary = ()=>{
             {store.employees.map((employee) => (
               <li
                 key={employee.id}
-                className="list-unstyled p-4"
+                className="list-unstyled"
               >
                 <div>
                   <UserCircle className="m-2 text-warning h-8 w-8" />
-                  <span>{employee.name}</span>
+                  <span>{employee.name} {employee.last_name}</span>
                 </div>
               </li>
             ))}
