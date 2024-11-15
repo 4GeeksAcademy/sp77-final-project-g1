@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect} from 'react';
 import { Context } from '../store/appContext';
 import { useNavigate } from "react-router-dom";
 import { ReceiptText, HandCoins } from 'lucide-react';
@@ -22,6 +22,13 @@ export const ApplicationsSummary = () => {
     actions.setCurrentApplication(application);
     navigate('/edit-application');
   }
+
+  useEffect(() => {
+  const fetchApplications = async () => {
+    await actions.getApplications();
+  };
+  fetchApplications();
+  }, []);
 
   return (
     <div className="m-2 d-flex flex-column align-items-center">
