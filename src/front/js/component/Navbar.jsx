@@ -100,7 +100,7 @@ export const Navbar = () => {
                         </Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="/create-application">
+                        <Link className="dropdown-item" to="/applications-summary">
                           <div className="d-flex align-items-center">
                             <i className="fa-solid fa-file-invoice-dollar me-2"></i>
                             <span>Requests</span>
