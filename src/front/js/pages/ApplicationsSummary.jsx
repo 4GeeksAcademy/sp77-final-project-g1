@@ -41,6 +41,7 @@ export const ApplicationsSummary = () => {
 
         {store.applications &&
         store.applications.length > 0 ? (
+
           <table className="table table-striped">
             <thead>
               <tr>
