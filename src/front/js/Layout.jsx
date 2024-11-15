@@ -18,6 +18,8 @@ import { Context } from "./store/appContext";
 import { AdminForm } from "./pages/AdminForm.jsx";
 import {ProfilePage} from "./pages/ProfilePage.jsx";
 import { EmployeesSumary } from "./pages/EmployeesSumary.jsx";
+import { ApplicationsSummary } from "./pages/ApplicationsSummary.jsx";
+import { EditApplication } from "./pages/EditApplication.jsx";
 
 
 const Layout = () => {
@@ -46,6 +48,8 @@ const Layout = () => {
                         <Route element={<ApplicationsForm />} path= "create-application" />
                         <Route element={<AdminForm />} path="/admin-form" />
                         <Route element={<EmployeesSumary/>} path="/employees-sumary"/>
+                        <Route element={<ApplicationsSummary/>} path="/applications-summary"/>
+                        <Route element={<EditApplication/>} path="/edit-application"/>
                         <Route element={<h1>No encontrado!</h1>} path="*" />
                     </Routes>
                     <Footer />
