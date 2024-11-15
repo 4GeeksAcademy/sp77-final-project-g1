@@ -18,6 +18,7 @@ import { Context } from "./store/appContext";
 import { AdminForm } from "./pages/AdminForm.jsx";
 import {ProfilePage} from "./pages/ProfilePage.jsx";
 import { EmployeesSumary } from "./pages/EmployeesSumary.jsx";
+import { SignUp } from "./component/SignUp.jsx";
 
 
 const Layout = () => {
@@ -41,6 +42,7 @@ const Layout = () => {
                         <Route element={<Expenses />} path="/expenses" /> 
                         <Route element={<Dashboard />} path="/dashboard" />
                         <Route element={<ProfilePage />} path="/profile-page" />
+                        <Route element={<SignUp />} path="/sign-up" />
                         <Route element={<CompanyForm />} path="/company-register" />
                         <Route element={<EmployeeForm />} path="create-employee" />
                         <Route element={<ApplicationsForm />} path= "create-application" />

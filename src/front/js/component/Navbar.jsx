@@ -108,6 +108,14 @@ export const Navbar = () => {
                         </Link>
                       </li>
                       <li>
+                        <Link className="dropdown-item" to="/sign-up">
+                          <div className="d-flex align-items-center">
+                            <i className="fa-brands fa-space-awesome me-2"></i>
+                            <span>Register Company</span>
+                          </div>
+                        </Link>
+                      </li>
+                      <li>
                         <hr className="dropdown-divider" />
                       </li>
                       <li>
