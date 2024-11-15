@@ -18,12 +18,10 @@ import { Context } from "./store/appContext";
 import { AdminForm } from "./pages/AdminForm.jsx";
 import {ProfilePage} from "./pages/ProfilePage.jsx";
 import { EmployeesSumary } from "./pages/EmployeesSumary.jsx";
- signup
 import { SignUp } from "./component/SignUp.jsx";
-=======
 import { ApplicationsSummary } from "./pages/ApplicationsSummary.jsx";
 import { EditApplication } from "./pages/EditApplication.jsx";
-develop
+
 
 
 const Layout = () => {

@@ -39,7 +39,7 @@ export const ApplicationsSummary = () => {
           </button>
         </div>
 
-        {store.applications&&
+        {store.applications &&
         store.applications.length > 0 ? (
           <table className="table table-striped">
             <thead>
