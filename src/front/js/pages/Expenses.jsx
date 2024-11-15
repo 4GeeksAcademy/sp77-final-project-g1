@@ -104,7 +104,7 @@ export const Expenses = () => {
                     <td className="text-secondary">{item.amount} €</td>
                     <td className="text-secondary">{item.description}</td>
                     <td className="text-secondary">{formatDate(item.date)}</td>
-                    <td className="text-secondary"><a target="_blank" href={item.vouchers}>File</a></td>
+                    <td className="text-secondary"><a target="_blank" href={item.vouchers.replace('.pdf', '')}>File</a></td>
                     <td className="text-secondary">
                       <span onClick={() => handleEditExpense(item)}>
                         <i
