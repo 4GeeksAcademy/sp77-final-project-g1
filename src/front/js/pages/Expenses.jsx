@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../store/appContext';
+import { HandCoins } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
+
 
 export const Expenses = () => {
   const { store, actions } = useContext(Context);
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [newExpense, setNewExpense] = useState({
     description: '',
@@ -48,6 +52,11 @@ export const Expenses = () => {
     return date.toLocaleDateString('es-ES');
   };
 
+  const handleEditExpense = async (expense) => {
+    actions.setCurrentApplication(expense);
+    navigate('/edit-expense');
+  }
+
   useEffect(() => {
     actions.getExpenses();
   }, []);
@@ -69,130 +78,120 @@ export const Expenses = () => {
             value={expenseFilter}
             onChange={inputChange}
           />
-          <div className="list-group">
-            <ul className="list-group">
-              {store.expenses.length > 0 ? (
-                store.expenses.map((item) => (
-                  <li key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                      <h6 className="mb-1">{item.description}</h6>
-                      <small className="text-muted">{formatDate(item.date)}</small>
-                    </div>
-                    <span
-                      className={`badge ${item.status === 'Approved'
-                        ? 'bg-success'
-                        : item.status === 'Pending'
-                          ? 'bg-warning'
-                          : 'bg-danger'
-                        }`}
-                    >
-                      {item.status}
-                    </span>
-                    <div>
-                      <p className="badge bg-success rounded-pill">{item.amount.toFixed(2)} €</p>
-                    </div>
-                  </li>)))
-                :
-                (<li className="list-group-item text-center text-muted">No expenses found</li>)}
-            </ul>
-          </div>
+
+          {/* Tabla de Applications */}
+          {store.expenses && store.expenses.length > 0 ? (
+            <table className="table table-striped mt-4">
+              <thead>
+                <tr>
+                  <th className="text-success"></th>
+                  <th className="text-success">Monto</th>
+                  <th className="text-success">Descripción</th>
+                  <th className="text-success">Fecha de Creación</th>
+                  <th className="text-success">Archivo Adjunto</th>
+                </tr>
+              </thead>
+              <tbody>
+                {store.expenses.map((item) => (
+                  <tr key={item.id}>
+                    <td><HandCoins className="text-success h-6 w-6" /></td>
+                    <td className="text-secondary">{item.amount} €</td>
+                    <td className="text-secondary">{item.description}</td>
+                    <td className="text-secondary">{formatDate(item.date)}</td>
+                    <td className="text-secondary"></td>
+                    <td className="text-secondary">
+                      <span onClick={() => handleEditExpense(item)}>
+                        <i
+                          className="fa-regular fa-pen-to-square text-warning"
+                          style={{ marginLeft: '11px' }}>
+                        </i>
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className='text-secondary'>No applications found</p>
+          )}
         </div>
-      </div >
-      {
-        showModal && (
-          <div className="modal show d-block" tabIndex="-1" role="dialog">
-            <div className="modal-dialog" role="document">
-              <div className="modal-content text-dark">
-                <div className="modal-header bg-dark text-light">
-                  <h5 className="modal-title">Add New Expense</h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    aria-label="Close"
-                    onClick={() => setShowModal(false)}
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <p>Enter the details of the new expense here. Click save when you're done.</p>
-                  <form onSubmit={handleAddExpense}>
-                    <div className="mb-3">
-                      <label htmlFor="description" className="form-label">
-                        Description
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="description"
-                        value={newExpense.description}
-                        onChange={handleNewExpenseChange}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="amount" className="form-label">
-                        Amount
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        name="amount"
-                        value={newExpense.amount}
-                        onChange={handleNewExpenseChange}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="category" className="form-label">
-                        Category
-                      </label>
-                      <select
-                        className="form-select"
-                        name="category"
-                        value={newExpense.category}
-                        onChange={handleNewExpenseChange}
-                      >
-                        <option value="">Select a category</option>
-                        <option value="office">Office Supplies</option>
-                        <option value="travel">Travel</option>
-                        <option value="software">Software</option>
-                        <option value="marketing">Marketing</option>
-                        <option value="utilities">Utilities</option>
-                      </select>
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="date" className="form-label">
-                        Date
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        name="date"
-                        value={newExpense.date}
-                        onChange={handleNewExpenseChange}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label htmlFor="file" className="form-label">
-                        Attachment
-                      </label>
-                      <input
-                        type="file"
-                        className="form-control"
-                        name="file"
-                        onChange={handleFileChange}
-                        accept="image/*,.pdf"
-                      />
-                    </div>
-                    <div className="d-flex justify-content-end">
-                      <button type="submit" className="btn btn-dark" disabled={isAddingExpense}>
-                        {isAddingExpense ? 'Adding...' : 'Add Expense'}
-                      </button>
-                    </div>
-                  </form>
-                </div>
+      </div>
+
+      {showModal && (
+        <div className="modal show d-block" tabIndex="-1" role="dialog">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content text-dark">
+              <div className="modal-header bg-dark text-light">
+                <h5 className="modal-title">Add New Expense</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Close"
+                  onClick={() => setShowModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>Enter the details of the new expense here. Click save when you're done.</p>
+                <form onSubmit={handleAddExpense}>
+                  <div className="mb-3">
+                    <label htmlFor="description" className="form-label">
+                      Description
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="description"
+                      value={newExpense.description}
+                      onChange={handleNewExpenseChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="amount" className="form-label">
+                      Amount
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      name="amount"
+                      value={newExpense.amount}
+                      onChange={handleNewExpenseChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="date" className="form-label">
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      name="date"
+                      value={newExpense.date}
+                      onChange={handleNewExpenseChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="file" className="form-label">
+                      Attachment
+                    </label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      name="file"
+                      onChange={handleFileChange}
+                      accept="image/*,.pdf"
+                    />
+                  </div>
+                  <div className="d-flex justify-content-end">
+                    <button type="submit" className="btn btn-dark" disabled={isAddingExpense}>
+                      {isAddingExpense ? 'Adding...' : 'Add Expense'}
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
-        )
-      }
-    </div >
+        </div>
+      )}
+    </div>
   );
 };

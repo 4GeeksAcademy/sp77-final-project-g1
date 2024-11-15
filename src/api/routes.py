@@ -193,7 +193,7 @@ def employees():
 def applications():
     response_body = {}
     current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user)
+    user = db.session.get(Users, current_user['user_id'])
     if not user.is_app_admin and not user.is_company_admin:
         response_body['message'] = 'Permiso denegado'
         return response_body, 403
@@ -208,14 +208,10 @@ def applications():
         response_body['results'] = result
         return response_body, 200
     if request.method == 'POST':
-        data = request.json()
-        if not user.is_company_admin and not user.is_app_admin and not user.is_employee:
-            response_body['message'] = 'Permiso denegado. Solo los empleados o administradores pueden crear solicitudes'
-            return response_body, 403
-        row = Application(description=data.get('description'),
-                           amount=data.get('amount'),
-                           employee_id=current_user,
-                           company_id=user.company_id)
+        data = request.json
+        row = Applications(description=data.get('description'),
+                           amount=float(data.get('amount')),
+                           creation_date=datetime.now())
         db.session.add(row)
         db.session.commit()
         response_body['message'] = 'Solicitud creada exitosamente (POST)'
@@ -413,7 +409,7 @@ def employee(id):
 def application(id):
     response_body = {}
     current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user)
+    user = db.session.get(Users, current_user['user_id'])
     rows = db.session.execute(db.select(Applications).where(Applications.id == id)).scalar()
     if not rows:
         response_body['message'] = 'Solicitud no existe'
@@ -428,14 +424,12 @@ def application(id):
         return response_body, 200
     if request.method == 'PUT':
         data = request.json
-        rows.description = data.get('description')
-        rows.amount = data.get('amount')
-        rows.approved_date = data.get('approved_date')
-        rows.reviewed_date = data.get('reviewed_date')
-        rows.is_approved = data.get('is_approved')
+        rows.description = data.get('description', rows.description)
+        rows.amount = data.get('amount', rows.amount)
         db.session.commit()
         response_body['message'] = f'Solicitud {id} ha sido modificada'
         response_body['result'] = rows.serialize()
+        print("Solicitud actualizada:", response_body)
         return response_body, 201
     if request.method == 'DELETE':
         db.session.delete(rows)
@@ -474,7 +468,7 @@ def history(id):
 def expenditure(id):
     response_body = {}
     current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user)
+    user = db.session.get(Users, current_user['user_id'])
     if not (user.is_app_admin or user.is_company_admin or user.is_employee):
         response_body['message'] = 'Permiso denegado'
         return response_body, 403
@@ -506,20 +500,38 @@ def expenditure(id):
         return response_body, 200
 
 
-@api.route('/api/register-company', methods=['POST'])
-def newCompany():
+@api.route('/register-company', methods=['POST'])
+@jwt_required()
+def new_company():
     response_body = {}
-    data = request.json()
-    row = Company(name=data.get('name'),
-                  date_recored=datetime.now())
+    current_user = get_jwt_identity()
+    user = db.session.get(Users, current_user['user_id'])
+    if not (user.is_app_admin):
+        response_body['message'] = 'Permiso denegado'
+        return response_body, 403
+    data = request.json
+    print(data)
+    # TODO: Verificar si el nombre de la compañia ya existe.
+    row = Companies(name=data.get('company_name'),
+                    date_recored=datetime.now())
     db.session.add(row)
     db.session.commit()
+    user = Users(email=data.get('email'),
+                 password=data.get('password'),
+                 is_active=True,
+                 is_app_admin=False,
+                 is_company_admin=True,
+                 company_id=row.serialize()['id'])
+    db.session.add(user)
+    db.session.commit() 
     response_body['message'] = 'Compañía registrada exitosamente'
-    response_body['results'] = row.serialize()
+    response_body['results'] = user.serialize()
+    response_body['results']['company'] = row.name
+    response_body['results']['company_id'] = row.id
     return response_body, 201
 
 
-@api.route('/api/create-applications', methods=['POST'])
+@api.route('/create-applications', methods=['POST'])
 @jwt_required()
 def new_application():
     response_body = {}
@@ -540,7 +552,7 @@ def new_application():
     return response_body, 201
 
 
-@api.route('/api/add-expenses', methods=['POST'])
+@api.route('/add-expenses', methods=['POST'])
 @jwt_required()
 def newExpenditure():
     response_body = {}

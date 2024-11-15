@@ -100,10 +100,18 @@ export const Navbar = () => {
                         </Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="/create-application">
+                        <Link className="dropdown-item" to="/applications-summary">
                           <div className="d-flex align-items-center">
                             <i className="fa-solid fa-file-invoice-dollar me-2"></i>
                             <span>Requests</span>
+                          </div>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item" to="/sign-up">
+                          <div className="d-flex align-items-center">
+                            <i className="fa-brands fa-space-awesome me-2"></i>
+                            <span>Register Company</span>
                           </div>
                         </Link>
                       </li>

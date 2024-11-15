@@ -99,13 +99,7 @@ export const Login = () => {
             <button type="submit" className="btn btn-secondary w-100 mt-3 p-2 mb-4" disabled={isLoading}>
               {isLoading ? "Cargando..." : "Iniciar sesión"}
             </button>
-            <div className="mt-3 text-center">
-              <a href="tu-enlace-aqui" className="link-empresa text-secondary">
-                Si eres empresa, regístrate.
-              </a>
-            </div>
           </form>
-
         </div>
       </div>
     </div>
