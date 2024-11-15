@@ -557,17 +557,21 @@ def new_application():
 def newExpenditure():
     response_body = {}
     current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user)
-    if not (user.is_company_admin or user.is_employee):
+    user = db.session.get(Users, current_user['user_id'])
+    employee = db.session.get(Employees,current_user['user_id'])
+    if not (user.is_company_admin or employee or user.is_app_admin):
         response_body['message'] = 'Permiso denegado para crear un gasto'
         return response_body, 403
     data = request.json
     row = Expenses(amount=float(data.get('amount')),
                    vouchers=data.get('vouchers'),
-                   date=datetime.now(),
+                   date=data.get('date'),
+                   description=data.get('description'),
                    user_id=user.id)
     db.session.add(row)
     db.session.commit()
     response_body['message'] = 'Gasto registrado exitosamente'
     response_body['results'] = row.serialize()
     return response_body, 201
+
+

@@ -21,12 +21,14 @@ export const Expenses = () => {
   const handleAddExpense = async (event) => {
     event.preventDefault();
     setIsAddingExpense(true);
+    const fileUrl = await actions.uploadFiles(newExpense.file)
+    console.log(fileUrl)
     const dataToSend = {
       description: newExpense.description,
       amount: parseFloat(newExpense.amount),
       category: newExpense.category,
       date: newExpense.date,
-      file: newExpense.file,
+      vouchers: fileUrl,
     };
     await actions.addExpenses(dataToSend);
     setShowModal(false);
@@ -40,6 +42,10 @@ export const Expenses = () => {
   };
 
   const handleFileChange = (e) => {
+    e.persist()
+    console.log(e.target.files)
+    const selectedFile = e.target.files ? e.target.files[0] : null;
+    if (!selectedFile) return
     setNewExpense((prev) => ({ ...prev, file: e.target.files[0] }));
   };
 
@@ -98,7 +104,7 @@ export const Expenses = () => {
                     <td className="text-secondary">{item.amount} €</td>
                     <td className="text-secondary">{item.description}</td>
                     <td className="text-secondary">{formatDate(item.date)}</td>
-                    <td className="text-secondary"></td>
+                    <td className="text-secondary"><a target="_blank" href={item.vouchers}>File</a></td>
                     <td className="text-secondary">
                       <span onClick={() => handleEditExpense(item)}>
                         <i
@@ -178,7 +184,7 @@ export const Expenses = () => {
                       className="form-control"
                       name="file"
                       onChange={handleFileChange}
-                      accept="image/*,.pdf"
+                      accept="application/pdf, image/*"
                     />
                   </div>
                   <div className="d-flex justify-content-end">
