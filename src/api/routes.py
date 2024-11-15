@@ -85,12 +85,12 @@ def companies():
 def users():
     response_body = {}
     current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user)
+    user = db.session.get(Users, current_user["user_id"])
     if not user.is_app_admin:
         response_body['message'] = 'Permiso denegado'
         return response_body, 403
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Users)).scalars()
+        rows = db.session.execute(db.select(Employees)).scalars()
         if not rows:
             response_body['message'] = f'User no existe'
             response_body['result'] = {}

@@ -4,7 +4,7 @@ import { Context } from '../store/appContext.js';
 
 export const ProfilePage = () => {
   const { store } = useContext(Context);
-  const usuarioLogueado = store.users?.find(user => user.correo === store.user);
+  const usuarioLogueado = store.users?.find(user => user.email === store.user);
   const maskEmail = (email) => {
     const [localPart, domain] = email.split('@');
     return `${localPart.slice(0, 3)}${'*'.repeat(localPart.length - 3)}@${domain}`;
@@ -34,15 +34,15 @@ export const ProfilePage = () => {
               <img
                 src={
                   usuarioLogueado.imagenUrl ||
-                  `https://ui-avatars.com/api/?name=${usuarioLogueado.nombre}&size=192&background=808080&color=fff`
+                  `https://ui-avatars.com/api/?name=${usuarioLogueado.name}&size=192&background=808080&color=fff`
                 }
-                alt={usuarioLogueado.nombre}
+                alt={usuarioLogueado.name}
                 className="w-100 h-100"
                 style={{ objectFit: 'cover' }}
               />
             </div>
-            <h1 className="h4 mt-3">{usuarioLogueado.nombre}</h1>
-            <span className="badge bg-success mt-2 fs-5">{usuarioLogueado.role}</span>
+            <h1 className="h4 mt-3">{usuarioLogueado.name}</h1>
+            <span className="badge bg-success mt-2 fs-5">{usuarioLogueado.is_app_admin?"Administrador":"Empleado"}</span>
             <div className="w-100 ms-md-4">
               <div className="mb-3">
                 <label className="form-label text-muted d-flex align-items-center">
@@ -50,18 +50,7 @@ export const ProfilePage = () => {
                 </label>
                 <input
                   type="text"
-                  value={maskEmail(usuarioLogueado.correo)}
-                  readOnly
-                  className="form-control bg-secondary text-white border-0"
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label text-muted d-flex align-items-center">
-                  <i className="fas fa-phone me-2"></i>Número de teléfono
-                </label>
-                <input
-                  type="text"
-                  value={maskPhone(usuarioLogueado.telefono)}
+                  value={maskEmail(usuarioLogueado.email)}
                   readOnly
                   className="form-control bg-secondary text-white border-0"
                 />
