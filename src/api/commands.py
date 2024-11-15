@@ -4,7 +4,7 @@ Los comandos de Flask son útiles para ejecutar cronjobs o tareas fuera de la AP
 con tu base de datos, por ejemplo: Importar el precio de bitcoin cada noche a las 12am.
 """
 import click
-from api.models import db, Users, Companies
+from api.models import db, Users, Companies, Employees
 
 
 def setup_commands(app):
@@ -29,26 +29,73 @@ def setup_commands(app):
 
     @app.cli.command("insert-test-data")
     def insert_test_data():
-        # Insertar datos de prueba en la base de datos
-        # Comprobar si la Compañía 0 ya existe
+        """
+        Comando para insertar datos de prueba en la base de datos.
+        Incluye una compañía, administradores y empleados.
+        """
+
+        # Verificar si la Compañía 0 ya existe
         company = Companies.query.get(0)
         if not company:
-            company = Companies()
-            company.name = "AnDiGu"
-            company.id = 0
+            company = Companies(name="AnDiGu")
             db.session.add(company)
 
-        # Crear Usuarios Diego, Guillermo, Anthony
-        for email in ["diego@andigu.com", "guillermo@andigu.com", "anthony@andigu.com"]:
+        # Crear usuarios administradores
+        admin_emails = ["diego@andigu.com", "guillermo@andigu.com", "anthony@andigu.com"]
+        for email in admin_emails:
             user = Users.query.filter_by(email=email).first()
             if not user:
-                user = Users()
-                user.email = email
-                user.password = "123456"
-                user.is_active = True
-                user.company_id = 0
-                user.is_app_admin = True
+                user = Users(
+                    email=email,
+                    password="123456",
+                    is_active=True,
+                    company_id=company.id,
+                    is_app_admin=True,
+                    is_company_admin=True
+                )
                 db.session.add(user)
-        
+
+                # Crear empleado relacionado con el administrador
+                employee = Employees(
+                    name=email.split('@')[0],
+                    last_name=email.split('@')[0].capitalize(),
+                    budget_limit=5000,
+                    user_to=user
+                )
+                db.session.add(employee)
+
+        # Crear empleados
+        employee_data = [
+            ("juan@andigu.com", "Juan", "Perez"),
+            ("maria@andigu.com", "Maria", "Gomez"),
+            ("carlos@andigu.com", "Carlos", "Lopez"),
+            ("lucia@andigu.com", "Lucia", "Martinez"),
+            ("pedro@andigu.com", "Pedro", "Rodriguez")
+        ]
+
+        for email, name, last_name in employee_data:
+            user = Users.query.filter_by(email=email).first()
+            if not user:
+                user = Users(
+                    email=email,
+                    password="123456",
+                    is_active=True,
+                    company_id=company.id,
+                    is_app_admin=False,
+                    is_company_admin=False
+                )
+                db.session.add(user)
+
+                # Crear empleado relacionado con el usuario
+                employee = Employees(
+                    name=name,
+                    last_name=last_name,
+                    budget_limit=1000,
+                    user_id=user.id
+                )
+                db.session.add(employee)
+
+        # Confirmar los cambios en la base de datos
         db.session.commit()
-        print("Datos de prueba insertados")
+        print("Datos de prueba insertados.")
+

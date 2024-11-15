@@ -54,10 +54,13 @@ class Administrators(db.Model):
         return f'Administrators {self.id} - {self.name} - {self.last_name}'
 
     def serialize(self):
+        user_data = self.user_to.serialize() if self.user_to else {} 
         return {'id': self.id,
                 'name': self.name,
                 'last_name': self.last_name,
-                'date_created': self.date_created}
+                'date_created': self.date_created,
+                **user_data
+                }
 
 
 class Employees(db.Model):
@@ -76,11 +79,15 @@ class Employees(db.Model):
         return f'Employees {self.id} - {self.name} {self.last_name}'
 
     def serialize(self):
-        return {'id': self.id,
-                'name': self.name,
-                'last_name': self.last_name,
-                'date_created': self.date_created,
-                'budget_limit': self.budget_limit}
+        user_data = self.user_to.serialize() if self.user_to else {} 
+        return {
+            'id': self.id,
+            'name': self.name,
+            'last_name': self.last_name,
+            'date_created': self.date_created,
+            'budget_limit': self.budget_limit,
+            **user_data  
+        }
 
 
 class Applications(db.Model):
