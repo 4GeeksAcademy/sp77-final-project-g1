@@ -44,8 +44,8 @@ const Layout = () => {
                         <Route element={<Dashboard />} path="/dashboard" />
                         <Route element={<ProfilePage />} path="/profile-page" />
                         <Route element={<CompanyForm />} path="/company-register" />
-                        <Route element={<EmployeeForm />} path="create-employee" />
-                        <Route element={<ApplicationsForm />} path= "create-application" />
+                        <Route element={<EmployeeForm />} path="/create-employee" />
+                        <Route element={<ApplicationsForm />} path="/create-application" />
                         <Route element={<AdminForm />} path="/admin-form" />
                         <Route element={<EmployeesSumary/>} path="/employees-sumary"/>
                         <Route element={<ApplicationsSummary/>} path="/applications-summary"/>
