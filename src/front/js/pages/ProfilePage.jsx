@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Context } from '../store/appContext.js';
-
 export const ProfilePage = () => {
   const { store } = useContext(Context);
   const usuarioLogueado = store.users?.find(user => user.email === store.user);
@@ -9,11 +8,9 @@ export const ProfilePage = () => {
     const [localPart, domain] = email.split('@');
     return `${localPart.slice(0, 3)}${'*'.repeat(localPart.length - 3)}@${domain}`;
   };
-
   const maskPhone = (phone) => {
     return `${'*'.repeat(phone.length - 3)}${phone.slice(-3)}`;
   };
-
   if (!usuarioLogueado) {
     return (
       <div className="container d-flex align-items-center justify-content-center min-vh-100">
@@ -21,7 +18,6 @@ export const ProfilePage = () => {
       </div>
     );
   }
-
   return (
     <div className="container d-flex align-items-center justify-content-center min-vh-100">
       <div className="card bg-dark text-white shadow-lg" style={{ maxWidth: '56rem' }}>
