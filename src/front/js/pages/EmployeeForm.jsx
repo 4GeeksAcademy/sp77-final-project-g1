@@ -6,11 +6,8 @@ import { Context } from "../store/appContext";
 export const EmployeeForm = () => {
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
-  const [idNumber, setIdNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [datecreate, setdatecreate] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
+  const [password, setPassword] = useState('');
   const [budgetLimit, setBudgetLimit] = useState("");
   const {store,actions} = useContext(Context)
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +20,8 @@ export const EmployeeForm = () => {
     const dataToSend = { 
       name: name,
       last_name: lastname,
+      email: email,
+      password: password,
       budget_limit: budgetLimit
     };
 
@@ -67,6 +66,26 @@ export const EmployeeForm = () => {
                     placeholder="Apellido"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="col-12 my-2">
+                  <input
+                    type="email"
+                    className="form-control"
+                    placeholder="Correo Electrónico"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="col-12 my-2">
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>

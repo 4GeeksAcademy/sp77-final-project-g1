@@ -141,10 +141,18 @@ def administrators():
             response_body['message'] = 'Permiso denegado para crear administradores'
             return response_body, 403
         data = request.json
+        new_user = Users(email=data.get('email'),
+                        password=data.get('password'),
+                        is_active=True,
+                        is_app_admin=False,
+                        is_company_admin=True,
+                        company_id=user.company_id)
+        db.session.add(new_user)
+        db.session.commit() 
         row = Administrators(name=data.get('name'),
                              last_name=data.get('last_name'),
                              date_created=datetime.now(),
-                             user_id = data.get('user_id'))
+                             user_id = new_user.id)
         db.session.add(row)
         db.session.commit()
         response_body['message'] = 'Administrador creado exitosamente'
@@ -176,15 +184,25 @@ def employees():
             response_body['message'] = 'Permiso denegado para crear administradores'
             return response_body, 403
         data = request.json
+        new_user = Users(email=data.get('email'),
+                        password=data.get('password'),
+                        is_active=True,
+                        is_app_admin=False,
+                        is_company_admin=True,
+                        company_id=user.company_id)
+        db.session.add(new_user)
+        db.session.commit() 
         row = Employees(name=data.get('name'),
-                             last_name=data.get('last_name'),
-                             date_created=datetime.now(),
-                             budget_limit= data.get('budget_limit'),
-                             user_id = data.get('user_id'))
+                        last_name=data.get('last_name'),
+                        date_created=datetime.now(),
+                        budget_limit= data.get('budget_limit'),
+                        user_id = new_user.id)
         db.session.add(row)
         db.session.commit()
-        response_body['message'] = 'Creando un empleado (POST)'
-        response_body['results'] = row.serialize()
+        response_body['message'] = 'Compañía registrada exitosamente'
+        response_body['results'] = user.serialize()
+        response_body['results']['employee'] = employee.name
+        response_body['results']['employeeid'] = employee.id
         return response_body, 201
 
 
