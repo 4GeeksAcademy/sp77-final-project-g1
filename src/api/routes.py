@@ -7,10 +7,10 @@ from flask_cors import CORS
 from datetime import datetime, timezone
 from api.models import db, Companies, Users, Administrators, Applications, Histories, Expenses, Employees
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-# import requests
+
 
 api = Blueprint('api', __name__)
-CORS(api)  # Allow CORS requests to this API
+CORS(api) 
 
 
 @api.route("/login", methods=["POST"]) 
