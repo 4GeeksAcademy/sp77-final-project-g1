@@ -69,9 +69,6 @@ class Employees(db.Model):
     last_name = db.Column(db.String, unique=False, nullable=False)
     date_created = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     budget_limit = db.Column(db.Integer, unique=False, nullable=False)
-    #  limit_expense_alert = db.Column(db.Bool, unique=False, nullable=False)
-    #  sended_applications = db.Column(db.Integer, unique=False, nullable=False)
-    #  email_automation = db.Column(db.String, unique=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('employee_to', lazy='select'))
 

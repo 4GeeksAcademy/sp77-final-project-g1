@@ -4,6 +4,8 @@ import { Context } from "../store/appContext";
 
 export const AdminForm = () => {
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState('');
   const [lastname, setLastname] = useState("");
   const {store,actions} = useContext(Context)
   const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +17,10 @@ export const AdminForm = () => {
     event.preventDefault();
     const dataToSend = { 
       name: name,
-      last_name: lastname
+      last_name: lastname,
+      email: email,
+      password: password,
+      email: email,
     };
     await actions.addAdmin(dataToSend);
     setIsLoading(false);
@@ -58,6 +63,26 @@ export const AdminForm = () => {
                     placeholder="Apellido"
                     value={lastname}
                     onChange={(e) => setLastname(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="col-12 my-2">
+                  <input
+                    type="email"
+                    className="form-control"
+                    placeholder="Correo Electrónico"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="col-12 my-2">
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Contraseña"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>

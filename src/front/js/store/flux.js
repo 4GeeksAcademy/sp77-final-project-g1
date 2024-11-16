@@ -4,10 +4,13 @@ const getState = ({ getStore, getActions, setStore }) => {
       user: '',
       isLoged: false,
       expenses: [],
+      currentExpense: {},
       administrators: [],
       employees: [],
       signup: [],
-      users: [] 
+      users: [],
+      applications: [],
+      currentApplications: {},
     },
 
     actions: {
@@ -40,6 +43,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('user', JSON.stringify(data.results));
         setStore({ isLoged: true, user: data.results.email });
+        await getActions().getApplications();
       },
 
       logout: () => {
@@ -101,6 +105,28 @@ const getState = ({ getStore, getActions, setStore }) => {
         };
         const response = await fetch(uri, options);
         if (!response.ok) return;
+        getActions().getExpenses();
+      },
+
+      setCurrentExpense: (expense) => {
+        setStore({ currentExpense: expense })
+      },
+
+      editExpense: async (id, dataToSend) => {
+        const token = localStorage.getItem('token');
+        const uri = `${process.env.BACKEND_URL}/api/expenses/${id}`;
+        const options = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(dataToSend)
+        };
+        const response = await fetch(uri, options)
+        if (!response.ok) {
+          return
+        }
         getActions().getExpenses();
       },
 
@@ -167,13 +193,17 @@ const getState = ({ getStore, getActions, setStore }) => {
           },
           body: JSON.stringify(dataToSend)
         };
-        const response = await fetch(uri, options);
-        if (!response.ok) {
-          console.log("Error:", response.status);
-          return;
+        try {
+          const response = await fetch(uri, options);
+          if (!response.ok) {
+            console.log("Error:", response.status);
+            return;
+          }
+          const data = await response.json();
+          setStore({ isLoged: true, employees: data.results });
+        } catch (error) {
+          console.error("Error en el registro:", error);
         }
-        const data = await response.json();
-        setStore({ isLoged: true, employees: data.results });
       },
 
       getAdministrators: async () => {
@@ -216,22 +246,78 @@ const getState = ({ getStore, getActions, setStore }) => {
         data.append("upload_preset", uploadPresets);
 
         try {
-            const response = await fetch(uri, {
-                method: "POST",
-                body: data
-            });
+          const response = await fetch(uri, {
+            method: "POST",
+            body: data
+          });
 
-            if (!response.ok) {
-                throw new Error('Upload failed');
-            }
+          if (!response.ok) {
+            throw new Error('Upload failed');
+          }
 
-            const parseData = await response.json();
-            return parseData.secure_url;
+          const parseData = await response.json();
+          return parseData.secure_url;
         } catch (error) {
-            console.error('Error uploading file:', error);
-            return null;
+          console.error('Error uploading file:', error);
+          return null;
         }
-    },
+      },
+      addApplication: async (dataToSend) => {
+        const uri = `${process.env.BACKEND_URL}/api/applications`;
+        const token = localStorage.getItem("token");
+        const options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(dataToSend)
+        };
+        const response = await fetch(uri, options);
+        if (!response.ok) {
+          console.log("Error:", response.status);
+          return;
+        }
+        const data = await response.json();
+        setStore({ applications: data.results });
+      },
+      getApplications: async () => {
+        const token = localStorage.getItem('token');
+        const uri = `${process.env.BACKEND_URL}/api/applications`;
+        const options = {
+          method: 'GET',
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+        };
+        const response = await fetch(uri, options);
+        if (!response.ok) {
+          return;
+        }
+        const data = await response.json();
+        setStore({ applications: data.results })
+      },
+      setCurrentApplication: (application) => {
+        setStore({ currentApplications: application })
+      },
+      editApplication: async (id, dataToSend) => {
+        const token = localStorage.getItem('token');
+        const uri = `${process.env.BACKEND_URL}/api/applications/${id}`;
+        const options = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(dataToSend)
+        };
+        const response = await fetch(uri, options)
+        if (!response.ok) {
+          return
+        }
+        getActions().getApplications();
+      },
     },
   };
 };
