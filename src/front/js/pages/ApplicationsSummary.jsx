@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect} from 'react';
 import { Context } from '../store/appContext';
 import { useNavigate } from "react-router-dom";
 import { ReceiptText, HandCoins } from 'lucide-react';
@@ -23,6 +23,13 @@ export const ApplicationsSummary = () => {
     navigate('/edit-application');
   }
 
+  useEffect(() => {
+  const fetchApplications = async () => {
+    await actions.getApplications();
+  };
+  fetchApplications();
+  }, []);
+
   return (
     <div className="m-2 d-flex flex-column align-items-center">
       <div className="mb-8 col-12 mt-3">
@@ -41,6 +48,7 @@ export const ApplicationsSummary = () => {
 
         {store.applications &&
         store.applications.length > 0 ? (
+
           <table className="table table-striped">
             <thead>
               <tr>

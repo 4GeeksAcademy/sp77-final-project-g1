@@ -20,7 +20,6 @@ import { ApplicationsSummary } from "./pages/ApplicationsSummary.jsx";
 import { EditApplication } from "./pages/EditApplication.jsx";
 
 
-
 const Layout = () => {
     const { store } = useContext(Context); 
     const basename = process.env.BASENAME || "";
