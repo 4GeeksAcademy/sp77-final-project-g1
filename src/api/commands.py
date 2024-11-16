@@ -54,7 +54,7 @@ def setup_commands(app):
                     password="123456",
                     is_active=True,
                     company_id=company.id,
-                    company_to=company,
+                    companies_to=company,
                     is_app_admin=True,
                     is_company_admin=True
                 )
@@ -92,7 +92,7 @@ def setup_commands(app):
                     password="123456",
                     is_active=True,
                     company_id=company_2.id,
-                    company_to=company_2,
+                    companies_to=company_2,
                     is_app_admin=False,
                     is_company_admin=False
                 )

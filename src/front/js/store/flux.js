@@ -208,6 +208,31 @@ const getState = ({ getStore, getActions, setStore }) => {
         const data = await response.json();
         setStore({ employees: data.results });
       },
+      uploadFiles: async (file) => {
+        const cloudName = "dsl7bwfyj";
+        const uploadPresets = "u0siqfrh";
+        const uri = `https://api.cloudinary.com/v1_1/${cloudName}/upload`; // Correct template literal syntax
+        const data = new FormData();
+        data.append("file", file);
+        data.append("upload_preset", uploadPresets);
+
+        try {
+            const response = await fetch(uri, {
+                method: "POST",
+                body: data
+            });
+
+            if (!response.ok) {
+                throw new Error('Upload failed');
+            }
+
+            const parseData = await response.json();
+            return parseData.secure_url;
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            return null;
+        }
+    },
     },
   };
 };

@@ -2,8 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Context } from '../store/appContext';
 import { HandCoins } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
-
-
 export const Expenses = () => {
   const { store, actions } = useContext(Context);
   const navigate = useNavigate();
@@ -17,50 +15,48 @@ export const Expenses = () => {
   });
   const [expenseFilter, setExpenseFilter] = useState('');
   const [isAddingExpense, setIsAddingExpense] = useState(false);
-
   const handleAddExpense = async (event) => {
     event.preventDefault();
     setIsAddingExpense(true);
+    const fileUrl = await actions.uploadFiles(newExpense.file)
+    console.log(fileUrl)
     const dataToSend = {
       description: newExpense.description,
       amount: parseFloat(newExpense.amount),
       category: newExpense.category,
       date: newExpense.date,
-      file: newExpense.file,
+      vouchers: fileUrl,
     };
     await actions.addExpenses(dataToSend);
     setShowModal(false);
     await actions.getExpenses();
     setIsAddingExpense(false);
   };
-
   const handleNewExpenseChange = (e) => {
     const { name, value } = e.target;
     setNewExpense((prev) => ({ ...prev, [name]: value }));
   };
-
   const handleFileChange = (e) => {
+    e.persist()
+    console.log(e.target.files)
+    const selectedFile = e.target.files ? e.target.files[0] : null;
+    if (!selectedFile) return
     setNewExpense((prev) => ({ ...prev, file: e.target.files[0] }));
   };
-
   const inputChange = (e) => {
     setExpenseFilter(e.target.value);
   };
-
   const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
     return date.toLocaleDateString('es-ES');
   };
-
   const handleEditExpense = async (expense) => {
     actions.setCurrentApplication(expense);
     navigate('/edit-expense');
   }
-
   useEffect(() => {
     actions.getExpenses();
   }, []);
-
   return (
     <div className="container mt-4">
       <div className="card">
@@ -78,7 +74,6 @@ export const Expenses = () => {
             value={expenseFilter}
             onChange={inputChange}
           />
-
           {/* Tabla de Applications */}
           {store.expenses && store.expenses.length > 0 ? (
             <table className="table table-striped mt-4">
@@ -98,7 +93,7 @@ export const Expenses = () => {
                     <td className="text-secondary">{item.amount} €</td>
                     <td className="text-secondary">{item.description}</td>
                     <td className="text-secondary">{formatDate(item.date)}</td>
-                    <td className="text-secondary"></td>
+                    <td className="text-secondary"><a target="_blank" href={item.vouchers.replace('.pdf', '')}>File</a></td>
                     <td className="text-secondary">
                       <span onClick={() => handleEditExpense(item)}>
                         <i
@@ -116,7 +111,6 @@ export const Expenses = () => {
           )}
         </div>
       </div>
-
       {showModal && (
         <div className="modal show d-block" tabIndex="-1" role="dialog">
           <div className="modal-dialog" role="document">
@@ -178,7 +172,7 @@ export const Expenses = () => {
                       className="form-control"
                       name="file"
                       onChange={handleFileChange}
-                      accept="image/*,.pdf"
+                      accept="application/pdf, image/*"
                     />
                   </div>
                   <div className="d-flex justify-content-end">
