@@ -7,10 +7,10 @@ from flask_cors import CORS
 from datetime import datetime, timezone
 from api.models import db, Companies, Users, Administrators, Applications, Histories, Expenses, Employees
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
-# import requests
+
 
 api = Blueprint('api', __name__)
-CORS(api)  # Allow CORS requests to this API
+CORS(api) 
 
 
 @api.route("/login", methods=["POST"]) 
@@ -557,11 +557,13 @@ def new_application():
 def newExpenditure():
     response_body = {}
     current_user = get_jwt_identity()
-    user = db.session.get(Users, current_user['user_id'])
-    employee = db.session.get(Employees,current_user['user_id'])
+    user = db.session.get(Users, current_user)
+    if not (user.is_company_admin or user.is_employee):
+            user = db.session.get(Users, current_user['user_id'])
+            employee = db.session.get(Employees,current_user['user_id'])
     if not (user.is_company_admin or employee or user.is_app_admin):
-        response_body['message'] = 'Permiso denegado para crear un gasto'
-        return response_body, 403
+            response_body['message'] = 'Permiso denegado para crear un gasto'
+            return response_body, 403
     data = request.json
     row = Expenses(amount=float(data.get('amount')),
                    vouchers=data.get('vouchers'),
@@ -573,5 +575,4 @@ def newExpenditure():
     response_body['message'] = 'Gasto registrado exitosamente'
     response_body['results'] = row.serialize()
     return response_body, 201
-
 

@@ -154,3 +154,4 @@ class Expenses(db.Model):
                 'date': self.date.isoformat(),
                 'vouchers': self.vouchers if self.vouchers else None}
 
+
