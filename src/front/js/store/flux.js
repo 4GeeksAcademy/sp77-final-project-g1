@@ -59,7 +59,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       // Nueva acción para obtener usuarios
       loadUsers: async () => {
         const token = localStorage.getItem('token');
-        const uri = `${process.env.BACKEND_URL}/api/users`; 
+        const uri = `${process.env.BACKEND_URL}/api/users`;
         const options = {
           method: 'GET',
           headers: {
@@ -72,7 +72,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         const data = await response.json();
         setStore({ users: data.results });
       },
-
       getExpenses: async () => {
         const token = localStorage.getItem('token');
         const uri = `${process.env.BACKEND_URL}/api/expenses`;
