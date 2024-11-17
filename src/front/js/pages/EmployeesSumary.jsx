@@ -1,13 +1,19 @@
 
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Context } from '../store/appContext';
 import { Users, UserCircle } from 'lucide-react'
 
 export const EmployeesSumary = ()=>{
   const {store,actions} = useContext(Context)
 
- actions.getEmployees()
- actions.getAdministrators()
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      await actions.getEmployees(); 
+      await actions.getAdministrators();
+    };
+    fetchEmployees();
+    }, []);
+
   return (
     <div className=" ms-4 d-flex">
       <section className="mb-8 col-6">

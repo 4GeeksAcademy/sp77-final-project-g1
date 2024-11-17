@@ -124,18 +124,12 @@ def administrators():
         response_body['message'] = 'Permiso denegado'
         return response_body, 403
     if request.method == 'GET':
-        if user.company_id == 0:
-            rows = db.session.execute(db.select(Administrators)).scalars()
-        else:
-            rows = db.session.execute(db.select(Administrators).where(Administrators.company_id == user.company_id)).scalars()
+        query = db.select(Administrators).join(Users, Administrators.user_id == Users.id).filter(Users.company_id == user.company_id)
+        rows = db.session.execute(query).scalars()
         if not rows:
-            response_body['message'] = 'No hay administradores para mostrar'
-            response_body['result'] = {}
-            return response_body, 404
+            return {"message": "No hay administradores en esta compañía", "results": []}, 404
         result = [row.serialize() for row in rows]
-        response_body['message'] = 'Listado de administradores (GET)'
-        response_body['results'] = result
-        return response_body, 200
+        return {"message": "Administradores encontrados", "results": result}, 200
     if request.method == 'POST':
         if user.company_id != 0 and not user.is_company_admin:
             response_body['message'] = 'Permiso denegado para crear administradores'
@@ -170,15 +164,12 @@ def employees():
         response_body['message'] = 'Permiso denegado'
         return response_body, 403
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Employees)).scalars()
+        query = db.select(Employees).join(Users, Employees.user_id == Users.id).filter(Users.company_id == user.company_id)
+        rows = db.session.execute(query).scalars()
         if not rows:
-            response_body['message'] = f'Employee no existe'
-            response_body['result'] = {}
-            return response_body, 404
+            return {"message": "No hay empleados en esta compañía", "results": []}, 404
         result = [row.serialize() for row in rows]
-        response_body['message'] = 'Listado de todos las empleados (GET)'
-        response_body['results'] = result
-        return response_body, 200
+        return {"message": "Empleados encontrados", "results": result}, 200
     if request.method == 'POST':
         if user.company_id != 0 and not user.is_company_admin:
             response_body['message'] = 'Permiso denegado para crear administradores'
@@ -188,7 +179,7 @@ def employees():
                         password=data.get('password'),
                         is_active=True,
                         is_app_admin=False,
-                        is_company_admin=True,
+                        is_company_admin=False,
                         company_id=user.company_id)
         db.session.add(new_user)
         db.session.commit() 
@@ -212,24 +203,48 @@ def applications():
     response_body = {}
     current_user = get_jwt_identity()
     user = db.session.get(Users, current_user['user_id'])
-    if not user.is_app_admin and not user.is_company_admin:
+    if not (user.is_app_admin or user.is_company_admin or user.company_id != 0):
         response_body['message'] = 'Permiso denegado'
         return response_body, 403
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Applications)).scalars()
+        if user.is_app_admin:
+            rows = db.session.execute(db.select(Applications)).scalars()  
+        elif user.is_company_admin:
+            company_id = user.company_id        
+            rows = db.session.execute(db.select(Applications).join(Employees, Employees.id == Applications.employee_id)
+                                      .join(Users, Users.id == Employees.user_id)
+                                      .where(Users.company_id == company_id)).scalars()     
+        else:
+            employee = db.session.query(Employees).filter(Employees.user_id == user.id).first()
+            if not employee:
+                response_body['message'] = 'Empleado no encontrado'
+                response_body['result'] = {}
+                return response_body, 404
+            rows = db.session.execute(db.select(Applications).where(Applications.employee_id == employee.id)).scalars()
         if not rows:
             response_body['message'] = 'No hay aplicaciones disponibles'
             response_body['result'] = {}
-            return response_body, 404
+            return response_body, 404 
         result = [row.serialize() for row in rows]
-        response_body['message'] = 'Listado de todas las solicitudes (GET)'
+        response_body['message'] = 'Listado de solicitudes (GET)'
         response_body['results'] = result
         return response_body, 200
     if request.method == 'POST':
-        data = request.json
+        data = request.json   
+        if user.is_app_admin or user.is_company_admin:
+            employee = db.session.query(Employees).filter(Employees.user_id == user.id).first()
+            is_approved = user.is_company_admin
+        else:
+            employee = db.session.query(Employees).filter(Employees.user_id == user.id).first()
+            is_approved = False 
+        if not employee:
+            response_body['message'] = 'Empleado no encontrado para este usuario.'
+            return response_body, 404
         row = Applications(description=data.get('description'),
                            amount=float(data.get('amount')),
-                           creation_date=datetime.now())
+                           creation_date=datetime.now(),
+                           employee_id=employee.id,
+                           is_approved=is_approved )
         db.session.add(row)
         db.session.commit()
         response_body['message'] = 'Solicitud creada exitosamente (POST)'
@@ -440,7 +455,7 @@ def application(id):
         response_body['message'] = 'Solicitud encontrada (GET)'
         response_body['results'] = rows.serialize()
         return response_body, 200
-    if request.method == 'PUT':
+    if request.method == 'PUT':gi
         data = request.json
         rows.description = data.get('description', rows.description)
         rows.amount = data.get('amount', rows.amount)
@@ -530,7 +545,7 @@ def new_company():
     data = request.json
     print(data)
     # TODO: Verificar si el nombre de la compañia ya existe.
-    row = Companies(name=data.get('company_name'),
+    row = Companies(name=data.get('name'),
                     date_recored=datetime.now())
     db.session.add(row)
     db.session.commit()

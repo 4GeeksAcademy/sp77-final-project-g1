@@ -70,13 +70,13 @@ class Employees(db.Model):
     date_created = db.Column(db.DateTime(timezone=True), nullable=False, default=datetime.now(timezone.utc))
     budget_limit = db.Column(db.Integer, unique=False, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('employee_to', lazy='select'))
+    user_to = db.relationship('Users', foreign_keys=[user_id], backref=db.backref('employee_to', lazy='select'), uselist=False)
 
     def __ref__(self):
         return f'Employees {self.id} - {self.name} {self.last_name}'
 
     def serialize(self):
-        user_data = self.user_to.serialize() if self.user_to else {} 
+        user_data = self.user_to.serialize() if self.user_to else {}
         return {
             'id': self.id,
             'name': self.name,
@@ -102,17 +102,19 @@ class Applications(db.Model):
     reviewed_by = db.Column(db.Integer, db.ForeignKey('employees.id'))
     reviewed_to = db.relationship('Employees', foreign_keys=[reviewed_by], backref=db.backref('applications_reviewed_to', lazy='select'))
 
-    def __ref__(self):
-        return f'Applications {self.id} - {self.employee_id}'
-    
     def serialize(self):
+        employee_name = self.employee_to.name
+        employee_last_name = self.employee_to.last_name 
         return {'id': self.id,
+                'employee_id': self.employee_id,
                 'description': self.description,
                 'creation_date': self.creation_date,
                 'approved_date': self.approved_date,
                 'reviewed_date': self.reviewed_date,
                 'is_approved': self.is_approved,
-                'amount': self.amount}
+                'amount': self.amount,
+                'employee_name': employee_name,
+                'employee_last_name': employee_last_name}
 
       
 class Histories(db.Model):

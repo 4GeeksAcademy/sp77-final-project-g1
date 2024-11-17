@@ -1,7 +1,7 @@
 const getState = ({ getStore, getActions, setStore }) => {
   return {
     store: {
-      user: '',
+      user: {},
       isLoged: false,
       expenses: [],
       currentExpense: {},
@@ -34,6 +34,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           headers: { "Content-Type": 'application/json' },
           body: JSON.stringify(dataToSend)
         };
+
         const response = await fetch(uri, options);
         if (!response.ok) {
           console.log('Error', response.status, response.statusText);
@@ -42,7 +43,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         const data = await response.json();
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('user', JSON.stringify(data.results));
-        setStore({ isLoged: true, user: data.results.email });
+        setStore({ isLoged: true, user: data.results });
         await getActions().getApplications();
       },
 
@@ -51,7 +52,6 @@ const getState = ({ getStore, getActions, setStore }) => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       },
-
       isLogged: () => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -59,8 +59,6 @@ const getState = ({ getStore, getActions, setStore }) => {
           setStore({ isLoged: true, user: userData.email });
         }
       },
-
-      // Nueva acción para obtener usuarios
       loadUsers: async () => {
         const token = localStorage.getItem('token');
         const uri = `${process.env.BACKEND_URL}/api/users`;
@@ -217,7 +215,9 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         };
         const response = await fetch(uri, options);
-        if (!response.ok) return;
+        if (!response.ok) {
+          return;
+        }
         const data = await response.json();
         setStore({ administrators: data.results });
       },
@@ -233,7 +233,9 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         };
         const response = await fetch(uri, options);
-        if (!response.ok) return;
+        if (!response.ok) {
+          return;
+        }
         const data = await response.json();
         setStore({ employees: data.results });
       },
