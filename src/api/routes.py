@@ -120,16 +120,17 @@ def administrators():
     response_body = {}
     current_user = get_jwt_identity()
     user = db.session.get(Users, current_user['user_id'])
+    if not user:
+        return {"message": "Usuario no encontrado"}, 404
     if not user.is_app_admin and not user.is_company_admin:
-        response_body['message'] = 'Permiso denegado'
-        return response_body, 403
+        return {"message": "Permiso denegado"}, 403
     if request.method == 'GET':
         query = db.select(Administrators).join(Users, Administrators.user_id == Users.id).filter(Users.company_id == user.company_id)
         rows = db.session.execute(query).scalars()
         if not rows:
-            return {"message": "No hay administradores en esta compañía", "results": []}, 404
+            return {"message": "No hay empleados en esta compañía", "results": []}, 404
         result = [row.serialize() for row in rows]
-        return {"message": "Administradores encontrados", "results": result}, 200
+        return {"message": "Empleados encontrados", "results": result}, 200
     if request.method == 'POST':
         if user.company_id != 0 and not user.is_company_admin:
             response_body['message'] = 'Permiso denegado para crear administradores'
@@ -160,9 +161,10 @@ def employees():
     response_body = {}
     current_user = get_jwt_identity()
     user = db.session.get(Users, current_user['user_id'])
-    if not user.is_app_admin and not user.is_company_admin:
-        response_body['message'] = 'Permiso denegado'
-        return response_body, 403
+    if not user:
+        return {"message": "Usuario no encontrado"}, 404
+    if not user.is_app_admin and not user.is_company_admin: 
+        return {"message": "Permiso denegado"}, 403
     if request.method == 'GET':
         query = db.select(Employees).join(Users, Employees.user_id == Users.id).filter(Users.company_id == user.company_id)
         rows = db.session.execute(query).scalars()
@@ -208,12 +210,15 @@ def applications():
         return response_body, 403
     if request.method == 'GET':
         if user.is_app_admin:
-            rows = db.session.execute(db.select(Applications)).scalars()  
+            rows = db.session.execute(db.select(Applications)).scalars()
         elif user.is_company_admin:
-            company_id = user.company_id        
-            rows = db.session.execute(db.select(Applications).join(Employees, Employees.id == Applications.employee_id)
-                                      .join(Users, Users.id == Employees.user_id)
-                                      .where(Users.company_id == company_id)).scalars()     
+            company_id = user.company_id
+            rows = db.session.execute(
+                db.select(Applications)
+                .join(Employees, Employees.id == Applications.employee_id)
+                .join(Users, Users.id == Employees.user_id)
+                .where(Users.company_id == company_id)
+            ).scalars()
         else:
             employee = db.session.query(Employees).filter(Employees.user_id == user.id).first()
             if not employee:
@@ -224,9 +229,9 @@ def applications():
         if not rows:
             response_body['message'] = 'No hay aplicaciones disponibles'
             response_body['result'] = {}
-            return response_body, 404 
+            return response_body, 404
         result = [row.serialize() for row in rows]
-        response_body['message'] = 'Listado de solicitudes (GET)'
+        response_body['message'] = 'Listado de todas las solicitudes (GET)'
         response_body['results'] = result
         return response_body, 200
     if request.method == 'POST':
@@ -236,7 +241,7 @@ def applications():
             is_approved = user.is_company_admin
         else:
             employee = db.session.query(Employees).filter(Employees.user_id == user.id).first()
-            is_approved = False 
+            is_approved = False
         if not employee:
             response_body['message'] = 'Empleado no encontrado para este usuario.'
             return response_body, 404
@@ -244,7 +249,7 @@ def applications():
                            amount=float(data.get('amount')),
                            creation_date=datetime.now(),
                            employee_id=employee.id,
-                           is_approved=is_approved )
+                           is_approved=is_approved)
         db.session.add(row)
         db.session.commit()
         response_body['message'] = 'Solicitud creada exitosamente (POST)'
@@ -455,7 +460,7 @@ def application(id):
         response_body['message'] = 'Solicitud encontrada (GET)'
         response_body['results'] = rows.serialize()
         return response_body, 200
-    if request.method == 'PUT':gi
+    if request.method == 'PUT':
         data = request.json
         rows.description = data.get('description', rows.description)
         rows.amount = data.get('amount', rows.amount)

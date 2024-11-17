@@ -44,6 +44,8 @@ const getState = ({ getStore, getActions, setStore }) => {
         localStorage.setItem('token', data.access_token);
         localStorage.setItem('user', JSON.stringify(data.results));
         setStore({ isLoged: true, user: data.results });
+        await getActions().getAdministrators();
+        await getActions().getEmployees();
         await getActions().getApplications();
       },
 
