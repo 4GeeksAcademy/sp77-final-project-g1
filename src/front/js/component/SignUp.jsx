@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 export const SignUp = () => {
     const { store, actions } = useContext(Context);
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -19,7 +20,7 @@ export const SignUp = () => {
         }
         setIsLoading(true);
         const dataToSend = {
-            company_name: 'segunda compañia',
+            name: name,
             email: email,
             password: password,
             is_active: true
@@ -39,6 +40,7 @@ export const SignUp = () => {
     };
 
     const handleEmail = (event) => setEmail(event.target.value);
+    const handleName = (event) => setName(event.target.value);
     const handlePassword = (event) => setPassword(event.target.value);
     const handleConfirmPassword = (event) => setConfirmPassword(event.target.value);
 
@@ -52,6 +54,19 @@ export const SignUp = () => {
                         </div>
                         <div className="card-body p-4">
                             <form onSubmit={handleRegister}>
+                                <div className="mb-3">
+                                    <label className="form-label">
+                                        <i class="fa-regular fa-building"></i> Nombre Empresa
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="form-control bg-dark text-white"
+                                        value={name}
+                                        onChange={handleName}
+                                        placeholder="Empresa"
+                                        required
+                                    />
+                                </div>
                                 <div className="mb-3">
                                     <label className="form-label">
                                         <i className="fas fa-envelope me-2"></i>Correo electrónico
@@ -78,9 +93,9 @@ export const SignUp = () => {
                                             onChange={handlePassword}
                                             required
                                         />
-                                        <button 
-                                            className="btn btn-outline-secondary" 
-                                            type="button" 
+                                        <button
+                                            className="btn btn-outline-secondary"
+                                            type="button"
                                             onClick={passwordVisibility}
                                         >
                                             <i className={showPassword ? "fas fa-eye-slash" : "fas fa-eye"}></i>
@@ -100,9 +115,9 @@ export const SignUp = () => {
                                         required
                                     />
                                 </div>
-                                <button 
-                                    type="submit" 
-                                    className="btn btn-primary w-100 py-2"
+                                <button
+                                    type="submit"
+                                    className="btn btn-secondary w-100 py-2"
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (

@@ -56,6 +56,7 @@ export const ApplicationsSummary = () => {
                 <th className="text-success">Monto</th>
                 <th className="text-success">Descripción</th>
                 <th className="text-success">Fecha de Creación</th>
+                <th className="text-success">Creado por</th>
                 <th className="text-success">Aprobado</th>
               </tr>
             </thead>
@@ -66,6 +67,7 @@ export const ApplicationsSummary = () => {
                   <td className="text-light">{item.amount} €</td>
                   <td className="text-light">{item.description}</td>
                   <td className="text-light">{formatDate(item.creation_date)}</td>
+                  <td className="text-light">{item.employee_name} {item.employee_last_name}</td>
                   <td className="text-light">
                     {item.is_approved ? 'Sí' : (
                       <>
