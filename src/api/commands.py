@@ -106,7 +106,5 @@ def setup_commands(app):
                     user_to=user
                 )
                 db.session.add(employee)
-
-#hola holotas y holis
         db.session.commit()
         print("Datos de prueba insertados.")
