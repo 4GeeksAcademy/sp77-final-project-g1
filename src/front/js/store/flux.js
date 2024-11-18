@@ -46,6 +46,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         setStore({ isLoged: true, user: data.results });
         await getActions().getAdministrators();
         await getActions().getEmployees();
+        await getActions().getExpenses();
         await getActions().getApplications();
       },
 

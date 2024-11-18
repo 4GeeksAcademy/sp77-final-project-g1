@@ -55,8 +55,11 @@ export const Expenses = () => {
     navigate('/edit-expense');
   }
   useEffect(() => {
-    actions.getExpenses();
-  }, []);
+    const fetchExpenses = async () => {
+      await actions.getExpenses();
+    };
+    fetchExpenses();
+    }, []);
   return (
     <div className="container mt-4">
       <div className="card">
