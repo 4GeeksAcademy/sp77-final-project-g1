@@ -298,29 +298,39 @@ def expenses():
     response_body = {}
     current_user = get_jwt_identity()
     user = db.session.get(Users, current_user['user_id'])
-    if not user.is_app_admin and not user.is_company_admin:
+    if not (user.is_app_admin or user.is_company_admin or user.company_id):
         response_body['message'] = 'Permiso denegado'
         return response_body, 403
     if request.method == 'GET':
-        rows = db.session.execute(db.select(Expenses)).scalars()
+        if user.is_app_admin: 
+            rows = db.session.query(Expenses).all()
+        elif user.is_company_admin:
+            rows = db.session.query(Expenses).join(Users).filter(Users.company_id == user.company_id).all()
+        else: 
+            rows = db.session.query(Expenses).filter(Expenses.user_id == user.id).all()
         if not rows:
-            response_body['message'] = 'No existen gastos registrados'
+            response_body['message'] = 'No hay gastos disponibles'
             response_body['results'] = []
             return response_body, 404
-        result = [row.serialize() for row in rows]
-        response_body['message'] = 'Gastos encontrados (GET)'
-        response_body['results'] = result
-        return jsonify(response_body), 200
+        response_body['message'] = 'Listado de gastos disponibles'
+        response_body['results'] = [row.serialize() for row in rows]
+        return response_body, 200
     if request.method == 'POST':
         data = request.json
-        row = Expenses(description=data.get('description'),
-                       amount=float(data.get('amount')),
-                       vouchers=data.get('vouchers'),
-                       date=datetime.now())
-        db.session.add(row)
+        if not (user.is_app_admin or user.is_company_admin):  # Solo empleados.
+            employee = db.session.query(Employees).filter(Employees.user_id == user.id).first()
+            if not employee:
+                response_body['message'] = 'Empleado no encontrado'
+                return response_body, 404
+        new_expense = Expenses(description=data.get('description'),
+                               amount=float(data.get('amount', 0)),
+                               vouchers=data.get('vouchers'),
+                               date=datetime.now(),
+                               user_id=user.id)
+        db.session.add(new_expense)
         db.session.commit()
-        response_body['message'] = 'Gasto creado exitosamente (POST)'
-        response_body['results'] = row.serialize()
+        response_body['message'] = 'Gasto creado exitosamente'
+        response_body['results'] = new_expense.serialize()
         return response_body, 201
 
 
