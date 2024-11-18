@@ -1,8 +1,7 @@
-import React, { useContext, useEffect} from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Context } from '../store/appContext';
 import { useNavigate } from "react-router-dom";
 import { ReceiptText, HandCoins } from 'lucide-react';
-
 
 export const ApplicationsSummary = () => {
   const { store, actions } = useContext(Context);
@@ -16,18 +15,23 @@ export const ApplicationsSummary = () => {
 
   const showAddRequest = () => {
     navigate("/create-application");
-  }
+  };
+
+  const handleApproveApplication = async (id) => {
+    const approvedBy = store.user.id;
+    await actions.approveApplication(id, approvedBy);
+  };
 
   const handleEditApplication = async (application) => {
     actions.setCurrentApplication(application);
     navigate('/edit-application');
-  }
+  };
 
   useEffect(() => {
-  const fetchApplications = async () => {
-    await actions.getApplications();
-  };
-  fetchApplications();
+    const fetchApplications = async () => {
+      await actions.getApplications();
+    };
+    fetchApplications();
   }, []);
 
   return (
@@ -46,9 +50,7 @@ export const ApplicationsSummary = () => {
           </button>
         </div>
 
-        {store.applications &&
-        store.applications.length > 0 ? (
-
+        {store.applications && store.applications.length > 0 ? (
           <table className="table table-striped">
             <thead>
               <tr>
@@ -69,23 +71,40 @@ export const ApplicationsSummary = () => {
                   <td className="text-light">{formatDate(item.creation_date)}</td>
                   <td className="text-light">{item.employee_name} {item.employee_last_name}</td>
                   <td className="text-light">
-                    {item.is_approved ? 'Sí' : (
+                    {item.is_approved ? (
                       <>
-                        No
-                        <span onClick={() => handleEditApplication(item)}>
-                          <i
-                            className="fa-regular fa-pen-to-square text-warning"
-                            style={{ marginLeft: '11px' }}>
-                          </i>
-                        </span>
+                        Sí <i
+                          className="fa-regular fa-check-circle text-success"
+                          style={{ marginLeft: '11px' }}
+                        ></i>
+                      </>
+                    ) : (
+                      <>
+                        <span>Pendiente</span>
                       </>
                     )}
+
+                    {(store.user.is_app_admin || store.user.is_company_admin) && !item.is_approved && (
+                      <span onClick={() => handleApproveApplication(item.id)}>
+                        <i
+                          className="fa-regular fa-check-circle text-success"
+                          style={{ marginLeft: '11px', cursor: 'pointer' }}
+                        ></i>
+                      </span>
+                    )}
+
+                    {!item.is_approved && !store.user.is_app_admin && !store.user.is_company_admin && (
+                      <span onClick={() => handleEditApplication(item)}>
+                        <i
+                          className="fa-regular fa-pen-to-square text-warning"
+                          style={{ marginLeft: '11px', cursor: 'pointer' }}
+                        ></i>
+                      </span>
+                    )}
                   </td>
-                  <td></td>
                 </tr>
               ))}
             </tbody>
-
           </table>
         ) : (
           <p>No applications found</p>

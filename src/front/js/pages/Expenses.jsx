@@ -87,6 +87,7 @@ export const Expenses = () => {
                   <th className="text-success">Descripción</th>
                   <th className="text-success">Fecha de Creación</th>
                   <th className="text-success">Archivo Adjunto</th>
+                  <th className="text-success">Creado por</th>
                 </tr>
               </thead>
               <tbody>
@@ -97,6 +98,7 @@ export const Expenses = () => {
                     <td className="text-secondary">{item.description}</td>
                     <td className="text-secondary">{formatDate(item.date)}</td>
                     <td className="text-secondary"><a target="_blank" href={item.vouchers.replace('.pdf', '')}>File</a></td>
+                    <td className="text-light">{item.employee_name} {item.employee_last_name}</td>
                     <td className="text-secondary">
                       <span onClick={() => handleEditExpense(item)}>
                         <i

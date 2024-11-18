@@ -97,7 +97,7 @@ class Applications(db.Model):
     amount = db.Column(db.Float, unique=False, nullable=False)
     employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'))
     employee_to = db.relationship('Employees', foreign_keys=[employee_id], backref=db.backref('applications_employee_to', lazy='select'))
-    approved_by = db.Column(db.Integer, db.ForeignKey('employees.id'))
+    approved_by = db.Column(db.Integer, db.ForeignKey('employees.id'), nullable=True)
     approved_to = db.relationship('Employees', foreign_keys=[approved_by], backref=db.backref('applications_approved_to', lazy='select'))
     reviewed_by = db.Column(db.Integer, db.ForeignKey('employees.id'))
     reviewed_to = db.relationship('Employees', foreign_keys=[reviewed_by], backref=db.backref('applications_reviewed_to', lazy='select'))

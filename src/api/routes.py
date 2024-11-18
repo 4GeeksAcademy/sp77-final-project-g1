@@ -471,14 +471,24 @@ def application(id):
         response_body['results'] = rows.serialize()
         return response_body, 200
     if request.method == 'PUT':
-        data = request.json
-        rows.description = data.get('description', rows.description)
-        rows.amount = data.get('amount', rows.amount)
+        application = db.session.query(Applications).filter_by(id=id).first()
+        if not application:
+            response_body['message'] = 'Aplicación no encontrada.'
+            return response_body, 404
+        employee = db.session.query(Employees).filter_by(user_id=user.id).first()
+        if not employee:
+            response_body['message'] = 'El usuario no está asociado a un empleado válido.'
+            return response_body, 400
+        if not (user.is_app_admin or user.is_company_admin):
+            response_body['message'] = 'El usuario no tiene permisos para aprobar esta solicitud.'
+            return response_body, 403
+        application.is_approved = True
+        application.approved_date = datetime.now()
+        application.approved_by = user.id 
         db.session.commit()
-        response_body['message'] = f'Solicitud {id} ha sido modificada'
-        response_body['result'] = rows.serialize()
-        print("Solicitud actualizada:", response_body)
-        return response_body, 201
+        response_body['message'] = 'Aplicación aprobada exitosamente'
+        response_body['result'] = application.serialize()  # Devuelve los datos serializados de la aplicación
+        return response_body, 200
     if request.method == 'DELETE':
         db.session.delete(rows)
         db.session.commit()
