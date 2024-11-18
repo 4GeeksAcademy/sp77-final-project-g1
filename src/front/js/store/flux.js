@@ -323,6 +323,22 @@ const getState = ({ getStore, getActions, setStore }) => {
         }
         getActions().getApplications();
       },
+      approveApplication: async (id) => {
+        const token = localStorage.getItem('token');
+        const uri = `${process.env.BACKEND_URL}/api/applications/${id}`;
+        const options = {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+        };
+        const response = await fetch(uri, options)
+        if (!response.ok) {
+          return
+        }
+        getActions().getApplications();
+      }
     },
   };
 };
