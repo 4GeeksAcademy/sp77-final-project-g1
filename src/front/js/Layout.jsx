@@ -7,7 +7,7 @@ import { Navbar } from "./component/Navbar.jsx";
 import { Footer } from "./component/Footer.jsx";
 import { Login } from "./pages/Login.jsx";   
 import { Expenses } from "./pages/Expenses.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
+import {Dashboard} from "./pages/Dashboard.jsx";
 import { CompanyForm } from "./component/CompanyForm.jsx";
 import { EmployeeForm } from "./pages/EmployeeForm.jsx";
 import { ApplicationsForm } from "./pages/ApplicationsForm.jsx";
