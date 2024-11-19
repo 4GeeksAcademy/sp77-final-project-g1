@@ -3,24 +3,31 @@ import { Context } from '../store/appContext';
 
 export const Dashboard = () => {
   const { store, actions } = useContext(Context);
-  const [search, setSearch] = useState(''); 
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     actions.getExpenses();
     actions.getApplications();
   }, []);
 
-  const totalExpenses = store.expenses?.reduce((total, expense) => total + expense.amount, 0) || 0;
+  const userExpenses = store.expenses?.filter((expense) => {
+    if (store.user.is_company_admin) {
+      return expense.user_id === store.user.id; 
+    }
+    return true;
+  }) || [];
 
-  const filteredExpenses = store.expenses?.filter((expense) => 
+  const totalExpenses = userExpenses.reduce((total, expense) => total + expense.amount, 0);
+
+  const filteredExpenses = userExpenses.filter((expense) =>
     expense.description.toLowerCase().includes(search.toLowerCase())
-  ) || [];
+  );
 
   const pendingApplications = store.applications?.filter(application => !application.is_approved).length || 0;
 
   const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
-    return date.toLocaleDateString('es-ES'); 
+    return date.toLocaleDateString('es-ES');
   };
 
   return (
@@ -29,28 +36,27 @@ export const Dashboard = () => {
         <h1 className="mb-4 text-white">Dashboard</h1>
 
         <div className="row g-4 mb-4">
+          {/* Total Expenses */}
           <div className="col-lg-4">
             <div className="card shadow-sm bg-success text-white">
               <div className="card-body">
                 <h5 className="card-title">Total Expenses</h5>
-                <h2 className="card-text">${totalExpenses.toFixed(2)}</h2>
-                <p className="card-subtitle text-white-50">+20.1% from last month</p>
+                <h2 className="card-text">€ {totalExpenses.toFixed(2)}</h2>
+                <p className="card-subtitle text-white-50">this month</p>
               </div>
             </div>
           </div>
 
-          {/* Pending Approvals */}
           <div className="col-lg-4">
             <div className="card shadow-sm bg-warning text-dark">
               <div className="card-body">
                 <h5 className="card-title">Pending Approvals</h5>
                 <h2 className="card-text">{pendingApplications}</h2>
-                <p className="card-subtitle text-dark-50">3 urgent requests</p>
+                <p className="card-subtitle text-dark-50">requests</p>
               </div>
             </div>
           </div>
 
-          {/* Budget Usage */}
           <div className="col-lg-4">
             <div className="card shadow-sm" style={{ backgroundColor: '#D8110F', color: '#350602' }}>
               <div className="card-body">
@@ -92,7 +98,7 @@ export const Dashboard = () => {
                   </li>
                 ))
               ) : (
-                <li className="list-group-item text-center">No expenses found.</li> 
+                <li className="list-group-item text-center">No expenses found.</li>
               )}
             </ul>
           </div>

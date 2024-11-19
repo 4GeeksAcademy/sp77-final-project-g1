@@ -317,7 +317,7 @@ def expenses():
         return response_body, 200
     if request.method == 'POST':
         data = request.json
-        if not (user.is_app_admin or user.is_company_admin):  # Solo empleados.
+        if not (user.is_app_admin or user.is_company_admin): 
             employee = db.session.query(Employees).filter(Employees.user_id == user.id).first()
             if not employee:
                 response_body['message'] = 'Empleado no encontrado'
@@ -476,18 +476,18 @@ def application(id):
             response_body['message'] = 'Aplicación no encontrada.'
             return response_body, 404
         employee = db.session.query(Employees).filter_by(user_id=user.id).first()
-        if not employee:
-            response_body['message'] = 'El usuario no está asociado a un empleado válido.'
-            return response_body, 400
         if not (user.is_app_admin or user.is_company_admin):
             response_body['message'] = 'El usuario no tiene permisos para aprobar esta solicitud.'
             return response_body, 403
+        if not employee:
+            response_body['message'] = 'El usuario no está asociado a un empleado válido.'
+            return response_body, 400
         application.is_approved = True
         application.approved_date = datetime.now()
         application.approved_by = user.id 
         db.session.commit()
         response_body['message'] = 'Aplicación aprobada exitosamente'
-        response_body['result'] = application.serialize()  # Devuelve los datos serializados de la aplicación
+        response_body['result'] = application.serialize() 
         return response_body, 200
     if request.method == 'DELETE':
         db.session.delete(rows)
@@ -569,7 +569,6 @@ def new_company():
         return response_body, 403
     data = request.json
     print(data)
-    # TODO: Verificar si el nombre de la compañia ya existe.
     row = Companies(name=data.get('name'),
                     date_recored=datetime.now())
     db.session.add(row)
