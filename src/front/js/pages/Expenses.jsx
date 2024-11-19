@@ -77,7 +77,6 @@ export const Expenses = () => {
             value={expenseFilter}
             onChange={inputChange}
           />
-          {/* Tabla de Applications */}
           {store.expenses && store.expenses.length > 0 ? (
             <table className="table table-striped mt-4">
               <thead>
