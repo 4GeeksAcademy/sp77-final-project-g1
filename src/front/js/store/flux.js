@@ -30,15 +30,14 @@ const getState = ({ getStore, getActions, setStore }) => {
       login: async (dataToSend) => {
         const uri = `${process.env.BACKEND_URL}/api/login`;
         const options = {
-          method: 'POST',
-          headers: { "Content-Type": 'application/json' },
-          body: JSON.stringify(dataToSend)
+            method: 'POST',
+            headers: { "Content-Type": 'application/json' },
+            body: JSON.stringify(dataToSend)
         };
-
         const response = await fetch(uri, options);
         if (!response.ok) {
-          console.log('Error', response.status, response.statusText);
-          return;
+            console.log('Error', response.status, response.statusText);
+            return;
         }
         const data = await response.json();
         localStorage.setItem('token', data.access_token);
@@ -51,15 +50,15 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
 
       logout: () => {
-        setStore({ isLoged: false, user: '' });
+        setStore({ isLoged: false, user: {} }); 
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       },
       isLogged: () => {
         const token = localStorage.getItem('token');
-        if (token) {
-          const userData = JSON.parse(localStorage.getItem('user'));
-          setStore({ isLoged: true, user: userData.email });
+        const userData = JSON.parse(localStorage.getItem('user'));
+        if (token && userData) {
+            setStore({ isLoged: true, user: userData });
         }
       },
       loadUsers: async () => {
